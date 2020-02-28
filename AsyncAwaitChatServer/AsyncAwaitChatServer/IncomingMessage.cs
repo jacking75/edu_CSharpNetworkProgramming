@@ -4,6 +4,8 @@ using System.Net;
 
 namespace ServerNet
 {
+    // √‚√≥: https://github.com/Horusiath/clusterpack/tree/master/src/ClusterPack/Transport 
+
     public readonly struct IncomingMessage : IDisposable
     {
         private readonly IMemoryOwner<byte>? owner;

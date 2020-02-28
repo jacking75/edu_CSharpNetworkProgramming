@@ -15,6 +15,8 @@ namespace AsyncAwaitChatServer
             var token = System.Threading.CancellationToken.None;
 
             using var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+
+            //NullLogger.Instance
             await using var transport = new ServerNet.TcpTransport(loggerFactory.CreateLogger("TCP local"));
 
             var localEndpoint = "127.0.0.1:32452";

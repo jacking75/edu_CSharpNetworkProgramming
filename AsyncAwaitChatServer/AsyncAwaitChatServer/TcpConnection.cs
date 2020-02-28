@@ -11,105 +11,109 @@ using System.Threading.Tasks;
 
 namespace ServerNet
 {
+    // 출처: https://github.com/Horusiath/clusterpack/tree/master/src/ClusterPack/Transport 
+
     internal sealed class TcpConnection : IEquatable<TcpConnection>, IComparable<TcpConnection>, IAsyncDisposable
     {
-        private readonly SemaphoreSlim sync;
-        private readonly IPEndPoint endpoint;
-        private readonly Socket socket;
-        private readonly MemoryPool<byte> pool;
-        private readonly System.Threading.Channels.ChannelWriter<IncomingMessage> channelWriter;
-        private readonly NetworkStream stream;
+        private readonly SemaphoreSlim Sync;
+        private readonly IPEndPoint HostEndpoint;
+        private readonly Socket Sock;
+        private readonly MemoryPool<byte> Pool;
+        private readonly System.Threading.Channels.ChannelWriter<IncomingMessage> ChannelWriter;
+        private readonly NetworkStream Stream;
         
-        private readonly Memory<byte> writeLength = new byte[sizeof(int)];
-        private readonly Memory<byte> readLength = new byte[sizeof(int)];
-        private Task poolerTask;
+        private readonly Memory<byte> WriteLength = new byte[sizeof(int)];
+        private readonly Memory<byte> ReadLength = new byte[sizeof(int)];
+        private Task? PoolerTask;
         
         public TcpConnection(Socket socket,
             MemoryPool<byte> pool,
             System.Threading.Channels.ChannelWriter<IncomingMessage> channelWriter)
         {
-            this.sync = new SemaphoreSlim(1);
-            this.socket = socket;
-            this.pool = pool;
-            this.channelWriter = channelWriter;
-            this.endpoint = (IPEndPoint) socket.RemoteEndPoint;
-            this.stream = new NetworkStream(this.socket, ownsSocket: true);
+            Sync = new SemaphoreSlim(1);
+            Sock = socket;
+            Pool = pool;
+            ChannelWriter = channelWriter;
+            HostEndpoint = (IPEndPoint) socket.RemoteEndPoint;
+
+            //NetworkStream 이 Socket에 대한 소유권을 가지게 했음. NetworkStream의 Close하면 Socket도 Close
+            Stream = new NetworkStream(this.Sock, ownsSocket: true);
         }
 
         /// <summary>
         /// Remote endpoint where this TCP connection can be accessed to.
         /// </summary>
-        public IPEndPoint Endpoint => endpoint;
+        public IPEndPoint Endpoint => Endpoint;
 
+        // Sync 변수를 사용하여 비동기 완료가 끝날 때만 비동기 요청을 할 수 있게 해준다
         public async ValueTask SendAsync(ReadOnlySequence<byte> data, CancellationToken cancellationToken)
         {
-            await sync.WaitAsync(cancellationToken);
+            await Sync.WaitAsync(cancellationToken);
             try
             {
+                //TODO 헤더와 보디를 나누어서 보내고 있음. 하나로 합치기
+
                 // prefix-length encoding (Big Endian)
-                BinaryPrimitives.WriteInt32BigEndian(writeLength.Span, (int)data.Length);
-                await stream.WriteAsync(writeLength, cancellationToken);
+                BinaryPrimitives.WriteInt32BigEndian(WriteLength.Span, (int)data.Length);
+                await Stream.WriteAsync(WriteLength, cancellationToken);
 
                 foreach (var buffer in data)
                 {
-                    await stream.WriteAsync(buffer, cancellationToken);
+                    await Stream.WriteAsync(buffer, cancellationToken);
                 }
 
-                await stream.FlushAsync(cancellationToken);
+                await Stream.FlushAsync(cancellationToken);
             }
             finally
             {
-                sync.Release();
+                Sync.Release();
             }
         }
 
         public Task Start()
         {
-            Interlocked.CompareExchange(ref poolerTask, PoolMessages(default), null);
-            return poolerTask;
+            Interlocked.CompareExchange(ref PoolerTask, PoolRemoteData(default), null);
+            return PoolerTask;
         }
 
         /// <summary>
         /// Returns an async stream of messages send by the other side of this <see cref="TcpConnection"/>.
         /// </summary>
-        private async Task PoolMessages(CancellationToken cancellationToken)
+        private async Task PoolRemoteData(CancellationToken cancellationToken)
         {
             var message = await ReadNextAsync(cancellationToken);
             while (message.HasValue)
             {
-                await channelWriter.WriteAsync(message.Value, cancellationToken);
+                await ChannelWriter.WriteAsync(message.Value, cancellationToken);
                 message = await ReadNextAsync(cancellationToken);
             }
         }
         
         private async Task<IncomingMessage?> ReadNextAsync(CancellationToken cancellationToken)
         {
-            var read = await stream.ReadAsync(readLength, cancellationToken);
+            //TODO ReadAsync 하나로 합치기
+            var read = await Stream.ReadAsync(ReadLength, cancellationToken);
             if (read < sizeof(int))
             {
                 return null; // connection closing
             }
             else
             {
-                var messageLength = BinaryPrimitives.ReadInt32BigEndian(readLength.Span);
+                var messageLength = BinaryPrimitives.ReadInt32BigEndian(ReadLength.Span);
                 var remaining = messageLength;
-                var ownedMemory = this.pool.Rent(remaining);
+                var ownedMemory = this.Pool.Rent(remaining);
                 var buffer = ownedMemory.Memory.Length > remaining
                     ? ownedMemory.Memory.Slice(0, remaining)
                     : ownedMemory.Memory;
                 
                 while (remaining > 0)
                 {
-                    read = await stream.ReadAsync(buffer, cancellationToken);
+                    read = await Stream.ReadAsync(buffer, cancellationToken);
                     if (read > 0)
                     {
                         buffer = buffer.Slice(read);
                         remaining -= read;  
                     }
-                    // else if (remaining > 0)
-                    // {
-                    //     throw new IOException($"Connection {Endpoint} has been closed before the whole message payload was read.");
-                    // }
                     else
                     {
                         break;
@@ -119,6 +123,7 @@ namespace ServerNet
             }
         }
 
+        // 헤더 읽기
         private int ReadMessageLength(ref ReadOnlySequence<byte> buffer)
         {
             var span = buffer.FirstSpan.Slice(0, 4);
@@ -128,36 +133,38 @@ namespace ServerNet
 
         public ValueTask DisposeAsync()
         {
-            poolerTask.Dispose();
-            return stream.DisposeAsync();
+            PoolerTask?.Dispose();
+            return Stream.DisposeAsync();
         }
 
-        #region equality and comparison
+
+        //TcpConnection 객체 비교. Equals, CompareTo
+        #region equality and comparison 
 
         public bool Equals(TcpConnection other)
         {
             if (other is null) return false;
-            if (this.endpoint.Port != other.endpoint.Port) return false;
-            if (this.endpoint.AddressFamily != other.endpoint.AddressFamily) return false;
+            if (this.Endpoint.Port != other.Endpoint.Port) return false;
+            if (this.Endpoint.AddressFamily != other.Endpoint.AddressFamily) return false;
 
-            ReadOnlySpan<byte> a = this.endpoint.Address.GetAddressBytes();
-            ReadOnlySpan<byte> b = other.endpoint.Address.GetAddressBytes();
+            ReadOnlySpan<byte> a = this.Endpoint.Address.GetAddressBytes();
+            ReadOnlySpan<byte> b = other.Endpoint.Address.GetAddressBytes();
 
             return a.SequenceEqual(b);
         }
-
+                 
         public int CompareTo(TcpConnection other)
         {
             if (other is null) return 1;
             
-            var cmp = ((int)this.endpoint.AddressFamily).CompareTo((int)other.endpoint.AddressFamily);
+            var cmp = ((int)this.Endpoint.AddressFamily).CompareTo((int)other.Endpoint.AddressFamily);
             if (cmp == 0)
             {
-                ReadOnlySpan<byte> a = this.endpoint.Address.GetAddressBytes();
-                ReadOnlySpan<byte> b = other.endpoint.Address.GetAddressBytes();
+                ReadOnlySpan<byte> a = this.Endpoint.Address.GetAddressBytes();
+                ReadOnlySpan<byte> b = other.Endpoint.Address.GetAddressBytes();
 
                 cmp = a.SequenceCompareTo(b);
-                if (cmp == 0) return this.endpoint.Port.CompareTo(other.endpoint.Port);
+                if (cmp == 0) return this.Endpoint.Port.CompareTo(other.Endpoint.Port);
             }
 
             return cmp;

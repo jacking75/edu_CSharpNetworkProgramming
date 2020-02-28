@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace ServerNet
 {
+    // √‚√≥: https://github.com/Horusiath/clusterpack/tree/master/src/ClusterPack/Transport 
+
     /// <summary>
     /// The transport interface used by membership service to provide means of communication between members.
     /// </summary>
