@@ -7,7 +7,7 @@
   
 ## 고성능 네트워크 관련 글
   
-###.NET Framework의 비동기 네트워크 라이브러리 성능 개선
+### .NET Framework의 비동기 네트워크 라이브러리 성능 개선
 - 닷넷은 현재 버전 4.5가 나왔다.(2013.04.05) 
     - 성장한 만큼 많은 개선과 기능 추가가 있었다. 그러나 프로그래머들이 닷넷의 성장을 따라가지 못하는 경우가 많다.
     - 닷넷을 메인으로 사용하지 않는 경우는 당연하고, 주위의 닷넷 프로그래머들의 이야기를 들어보면 닷넷 프로그래머들도 최신 기술을 모르던가 사용하지 않는 경우가 많다고한다. 
@@ -16,7 +16,7 @@
     - 혹시 아래 소개한 것을 본적이 없다면 꼭 이것을 보고 닷넷으로 서버 프로그램을 개발하기 바란다(물론 궂이 고성능을 필요로 하지 않으면 기존 방식대로 해도 좋다)
   
   
-###SocketAsyncEventArgs
+### SocketAsyncEventArgs
 - 닷넷에서 고성능 네트웍 프로그래밍을 하기 위해서는 필연적으로 3.5에서 추가된 SocketAsyncEventArgs 클래스에 대해서 알아야 한다.
     - http://msdn.microsoft.com/ko-kr/library/system.net.sockets.socketasynceventargs.aspx
 - 이것을 사용한 샘플은
@@ -30,10 +30,8 @@
     - http://www.codeproject.com/Articles/83102/C-SocketAsyncEventArgs-High-Performance-Socket-Cod
   
   
-###High performance asynchronous awaiting sockets
+### High performance asynchronous awaiting sockets
 - http://stackoverflow.com/questions/17093206/high-performance-asynchronous-awaiting-sockets
-- Converting Microsoft's Asynchronous Server Socket Sample to Async CTP
-    - http://social.msdn.microsoft.com/Forums/en-US/aac79f64-5886-40f5-a8f1-a4a6f2460c85/converting-microsofts-asynchronous-server-socket-sample-to-async-ctp
-
-
+- [Converting Microsoft's Asynchronous Server Socket Sample to Async CTP](http://social.msdn.microsoft.com/Forums/en-US/aac79f64-5886-40f5-a8f1-a4a6f2460c85/converting-microsofts-asynchronous-server-socket-sample-to-async-ctp)
+  
   
