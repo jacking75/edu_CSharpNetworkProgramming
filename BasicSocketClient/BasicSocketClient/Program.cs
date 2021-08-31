@@ -76,4 +76,5 @@ namespace BasicSocketClient
                 Console.WriteLine(e.ToString());
             }
         }
+    }
 }

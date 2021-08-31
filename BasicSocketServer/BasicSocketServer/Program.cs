@@ -20,7 +20,7 @@ namespace BasicSocketServer
         public static void StartListening()
         {
             // Data buffer for incoming data.
-            byte[] bytes = new Byte[1024];
+            var bytes = new Byte[1024];
 
             // Establish the local endpoint for the socket.
             // Dns.GetHostName returns the name of the 
@@ -30,8 +30,7 @@ namespace BasicSocketServer
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
 
             // Create a TCP/IP socket.
-            Socket listener = new Socket(AddressFamily.InterNetwork,
-                SocketType.Stream, ProtocolType.Tcp);
+            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             // Bind the socket to the local endpoint and 
             // listen for incoming connections.
