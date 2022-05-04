@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSocketLite.SocketBase", "SocketBase\FastSocketLite.SocketBase.csproj", "{614A13BD-BE9F-4304-A239-E63EC005F6DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{614A13BD-BE9F-4304-A239-E63EC005F6DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{614A13BD-BE9F-4304-A239-E63EC005F6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{614A13BD-BE9F-4304-A239-E63EC005F6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{614A13BD-BE9F-4304-A239-E63EC005F6DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CBF6ACD8-64DE-48AB-9526-FB421203A9E9}
+	EndGlobalSection
+EndGlobal
