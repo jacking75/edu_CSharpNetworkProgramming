@@ -25,6 +25,20 @@ namespace FreeNet
         {
             return isClient ? ClientSendPacketMTU : ServerSendPacketMTU;
         }
+
+        public void OutToConsole()
+        {
+            Console.WriteLine("[ ServerOption ]");
+            Console.WriteLine($"MaxConnectionCount: {MaxConnectionCount}");
+            Console.WriteLine($"ReserveClosingWaitMilliSecond: {ReserveClosingWaitMilliSecond}");
+            Console.WriteLine($"ReceiveSecondaryBufferSize: {ReceiveSecondaryBufferSize}");
+            Console.WriteLine($"ClientReceiveBufferSize: {ClientReceiveBufferSize}");
+            Console.WriteLine($"ClientMaxPacketSize: {ClientMaxPacketSize}");
+            Console.WriteLine($"ClientSendPacketMTU: {ClientSendPacketMTU}");
+            Console.WriteLine($"ClientHeartBeatIntervalSec: {ClientHeartBeatIntervalSec}");
+            Console.WriteLine($"ClientHeartBeatMaxWaitTimeSec: {ClientHeartBeatMaxWaitTimeSec}");
+            Console.WriteLine($"ServerSendPacketMTU: {ServerSendPacketMTU}");
+        }
     }
     
 }
