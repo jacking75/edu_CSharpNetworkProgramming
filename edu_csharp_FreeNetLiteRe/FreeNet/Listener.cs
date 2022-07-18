@@ -10,29 +10,20 @@ namespace FreeNet
 {
 	class Listener
 	{
-		// 비동기 Accept를 위한 EventArgs.
-		SocketAsyncEventArgs Accept_Args;
-
 		bool IsNoDelay = false;
 
 		Socket ListenSocket;
 
-		// Accept처리의 순서를 제어하기 위한 이벤트 변수.
-		AutoResetEvent FlowControlEvent;
-
 		// 새로운 클라이언트가 접속했을 때 호출되는 콜백.
-		public Action<Socket, object> OnNewClientCallback = null;
+		public Action<Socket> OnNewClientCallback = null;
 
 
-		public Listener() { }
 
 		public void Start(string host, int port, int backlog, bool isNoDelay)
 		{
 			IsNoDelay = isNoDelay;
 
-			ListenSocket = new Socket(AddressFamily.InterNetwork,
-							SocketType.Stream, ProtocolType.Tcp);
-
+			ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
 			IPAddress address;
 
@@ -50,10 +41,7 @@ namespace FreeNet
 			{
 				ListenSocket.Bind(endpoint);
 				ListenSocket.Listen(backlog);
-
-				Accept_Args = new SocketAsyncEventArgs();
-				Accept_Args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
-
+								
 				var listen_thread = new Thread(DoListen);
 				listen_thread.Start();
 			}
@@ -69,6 +57,30 @@ namespace FreeNet
 		/// 하나의 접속 처리가 완료된 후 다음 accept를 수행하기 위해서 event객체를 통해 흐름을 제어하도록 구현되어 있습니다.
 		/// </summary>
 		void DoListen()
+		{
+			while (true)
+			{
+				try
+				{
+					// 비동기 accept를 호출하여 클라이언트의 접속을 받아들입니다.
+					// 비동기 매소드 이지만 동기적으로 수행이 완료될 경우도 있으니
+					// 리턴값을 확인하여 분기시켜야 합니다.
+					var newClient = ListenSocket.Accept();
+
+					// 새로 생긴 소켓을 보관해 놓은뒤~
+					newClient.NoDelay = IsNoDelay;
+
+					OnNewClientCallback(newClient);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e.Message);
+					continue;
+				}
+								
+			}
+		}
+		/*void DoListen()
 		{
 			FlowControlEvent = new AutoResetEvent(false);
 
@@ -108,14 +120,14 @@ namespace FreeNet
 				//      다음 Accept 호출 까지 문제 없이 이루어 집니다.
 				//      WaitOne매소드가 호출될 때 이벤트 객체가 이미 signalled 상태라면 스레드를 대기 하지 않고 계속 진행하기 때문입니다.
 			}
-		}
+		}*/
 
 		/// <summary>
 		/// AcceptAsync의 콜백 매소드
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e">AcceptAsync 매소드 호출시 사용된 EventArgs</param>
-		void OnAcceptCompleted(object sender, SocketAsyncEventArgs e)
+		/*void OnAcceptCompleted(object sender, SocketAsyncEventArgs e)
 		{
 			if (e.SocketError == SocketError.Success)
 			{
@@ -142,6 +154,6 @@ namespace FreeNet
 
 			// 다음 연결을 받아들인다.
 			FlowControlEvent.Set();
-		}
+		}*/
 	}
 }

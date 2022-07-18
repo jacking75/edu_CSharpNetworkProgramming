@@ -167,12 +167,10 @@ namespace FreeNet
 
         // 스레드 세이프 하지 않다
         public UInt64 MakeSequenceIdForSession() { return ++SequenceId; }
-        /// <summary>
+        
         /// 새로운 클라이언트가 접속 성공 했을 때 호출됩니다.
         /// AcceptAsync의 콜백 매소드에서 호출되며 여러 스레드에서 동시에 호출될 수 있기 때문에 공유자원에 접근할 때는 주의해야 합니다.
-        /// </summary>
-        /// <param name="client_socket"></param>
-        void OnNewClient(Socket client_socket, object token)
+        void OnNewClient(Socket client_socket)
         {
             // UserToken은 매번 새로 생성하여 깨끗한 인스턴스로 넣어준다.
             var uniqueId = MakeSequenceIdForSession();

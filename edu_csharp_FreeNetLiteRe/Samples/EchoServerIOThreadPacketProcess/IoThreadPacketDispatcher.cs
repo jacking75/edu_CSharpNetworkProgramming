@@ -19,7 +19,7 @@ namespace EchoServerIOThreadPacketProcess
             //Console.WriteLine("------------------------------------------------------");
             //Console.WriteLine("protocol id " + protocol);
 
-            if (IsSystem == false && (packet.ProtocolId <= NetworkDefine.SYS_NTF_MAX))
+            if (IsSystem == false && (packet.Id <= NetworkDefine.SYS_NTF_MAX))
             {
                 //TODO: 로그 남기기
                 // 시스템만 보내어야할 패킷을 상대방이 보냈음. 해킹 의심
@@ -27,7 +27,7 @@ namespace EchoServerIOThreadPacketProcess
             }
 
 
-            var protocol = (PROTOCOL_ID)packet.ProtocolId;
+            var protocol = (PROTOCOL_ID)packet.Id;
 
             switch (protocol)
             {
@@ -61,7 +61,7 @@ namespace EchoServerIOThreadPacketProcess
             // active close를 위한 코딩.
             //   서버에서 종료하라고 연락이 왔는지 체크한다.
             //   만약 종료신호가 맞다면 disconnect를 호출하여 받은쪽에서 먼저 종료 요청을 보낸다.
-            switch (packet.ProtocolId)
+            switch (packet.Id)
             {
                 // 이 처리는 꼭 해줘야 한다.
                 case FreeNet.NetworkDefine.SYS_NTF_CONNECTED:
