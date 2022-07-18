@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FreeNet
-{
-    public interface IMessageResolver
-    {
-        void Init(int bufferSize);
+namespace FreeNet;
 
-        void OnReceive(byte[] buffer, int offset, int transffered, Action<Packet> callback);             
-    }
+public interface IMessageResolver
+{
+    void Init(int bufferSize);
+
+    void OnReceive(byte[] buffer, int offset, int transffered, Action<Packet> callback);             
 }

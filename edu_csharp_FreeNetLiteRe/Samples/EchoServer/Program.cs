@@ -5,8 +5,6 @@ namespace SampleServer
 {
 	class Program
 	{
-		
-
 		static void Main(string[] args)
 		{
 			var serverOpt = new FreeNet.ServerOption();			

@@ -4,71 +4,70 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace FreeNet
+namespace FreeNet;
+
+class ReserveClosingProcess
 {
-    class ReserveClosingProcess
+    ConcurrentQueue<Session> ReserveQueue = new ConcurrentQueue<Session>();
+
+    bool IsStarted = false;
+    Thread ProcessThread = null;
+
+    int CheckMilliSecond = 100;
+
+            
+    public void Start(int checkMilliSecond)
     {
-        ConcurrentQueue<Session> ReserveQueue = new ConcurrentQueue<Session>();
+        CheckMilliSecond = checkMilliSecond;
+        IsStarted = true;
 
-        bool IsStarted = false;
-        Thread ProcessThread = null;
+        ProcessThread = new Thread(Process);
+        ProcessThread.Start();
+    }
 
-        int CheckMilliSecond = 100;
-
-                
-        public void Start(int checkMilliSecond)
+    public void Stop()
+    {
+        if(IsStarted == false)
         {
-            CheckMilliSecond = checkMilliSecond;
-            IsStarted = true;
-
-            ProcessThread = new Thread(Process);
-            ProcessThread.Start();
+            return;
         }
 
-        public void Stop()
+        IsStarted = false;
+        ProcessThread.Join();
+    }
+
+    public void Add(Session session)
+    {
+        ReserveQueue.Enqueue(session);
+    }
+
+
+    void Process()
+    {
+        while (IsStarted)
         {
-            if(IsStarted == false)
+            var currentTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
+
+            while (true)
             {
-                return;
-            }
+                bool isTimeWaitOrEmpty = true;
 
-            IsStarted = false;
-            ProcessThread.Join();
-        }
-
-        public void Add(Session session)
-        {
-            ReserveQueue.Enqueue(session);
-        }
-
-
-        void Process()
-        {
-            while (IsStarted)
-            {
-                var currentTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond);
-
-                while (true)
+                if (ReserveQueue.TryPeek(out var temp) && temp.ReserveClosingMillSec <= currentTime)
                 {
-                    bool isTimeWaitOrEmpty = true;
-
-                    if (ReserveQueue.TryPeek(out var temp) && temp.ReserveClosingMillSec <= currentTime)
+                    if (ReserveQueue.TryDequeue(out var session))
                     {
-                        if (ReserveQueue.TryDequeue(out var session))
-                        {
-                            isTimeWaitOrEmpty = false;
-                            session.Close();
-                        }
-                    }
-
-                    if(isTimeWaitOrEmpty)
-                    {
-                        break;
+                        isTimeWaitOrEmpty = false;
+                        session.Close();
                     }
                 }
-                
-                Thread.Sleep(CheckMilliSecond);
+
+                if(isTimeWaitOrEmpty)
+                {
+                    break;
+                }
             }
+            
+            Thread.Sleep(CheckMilliSecond);
         }
     }
 }
