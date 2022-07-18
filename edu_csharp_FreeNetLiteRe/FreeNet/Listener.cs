@@ -13,7 +13,7 @@ namespace FreeNet
 		// 비동기 Accept를 위한 EventArgs.
 		SocketAsyncEventArgs Accept_Args;
 
-		SocketOption RemoteSocketOpt = new SocketOption();
+		bool IsNoDelay = false;
 
 		Socket ListenSocket;
 
@@ -26,9 +26,9 @@ namespace FreeNet
 
 		public Listener() { }
 
-		public void Start(string host, int port, int backlog, SocketOption socketOption)
+		public void Start(string host, int port, int backlog, bool isNoDelay)
 		{
-			RemoteSocketOpt = socketOption;
+			IsNoDelay = isNoDelay;
 
 			ListenSocket = new Socket(AddressFamily.InterNetwork,
 							SocketType.Stream, ProtocolType.Tcp);
@@ -121,7 +121,7 @@ namespace FreeNet
 			{
 				// 새로 생긴 소켓을 보관해 놓은뒤~
 				var client_socket = e.AcceptSocket;
-				client_socket.NoDelay = RemoteSocketOpt.NoDelay;
+				client_socket.NoDelay = IsNoDelay;
 
 				// 이 클래스에서는 accept까지의 역할만 수행하고 클라이언트의 접속 이후의 처리는
 				// 외부로 넘기기 위해서 콜백 매소드를 호출해 주도록 합니다.

@@ -13,9 +13,8 @@ namespace SampleServer
 			var service = new FreeNet.NetworkService<FreeNet.DefaultMessageResolver>(serverOpt, null);					
 			service.Initialize();
 
-			var socketOpt = new FreeNet.SocketOption();
-			socketOpt.NoDelay = true;
-			service.Listen("0.0.0.0", 7979, 100, socketOpt);
+			bool isNoDelay = true;
+			service.Listen("0.0.0.0", 7979, 100, isNoDelay);
 			
 			Console.WriteLine("Started!");
 
@@ -32,7 +31,7 @@ namespace SampleServer
 
 				if (input.Equals("users"))
 				{
-					Console.WriteLine(service.SessionMgr.GetTotalCount());
+					Console.WriteLine(service.SessionMgr.CurrentConnectdSessionCount());
 				}
 				else if (input.Equals("exit"))
 				{

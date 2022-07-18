@@ -80,18 +80,18 @@ namespace FreeNet
 
         public class BufferManagerAsync : IBufferManager
         {
-            int NumBytes;
+            int TotalBytes;
             byte[] TotalBuffer;
             ConcurrentBag<int> FreeIndexPool = new ConcurrentBag<int>();
             int TakeBufferSize;
 
             public void Init(int bufferCount, int bufferSize)
             {
-                NumBytes = bufferCount * bufferSize;
+                TotalBytes = bufferCount * bufferSize;
                 TakeBufferSize = bufferSize;
-                TotalBuffer = new byte[NumBytes];
+                TotalBuffer = new byte[TotalBytes];
 
-                var count = NumBytes / TakeBufferSize;
+                var count = TotalBytes / TakeBufferSize;
                 for (int i = 0; i < count; ++i)
                 {
                     FreeIndexPool.Add((i * TakeBufferSize));

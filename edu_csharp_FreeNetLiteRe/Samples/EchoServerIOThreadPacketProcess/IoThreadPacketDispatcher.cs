@@ -10,12 +10,8 @@ namespace EchoServerIOThreadPacketProcess
     {
         FreeNet.NetworkService<FreeNet.DefaultMessageResolver> RefNetworkService = null;
 
-        static ConcurrentDictionary<UInt64, GameUser> UserList = new ConcurrentDictionary<UInt64, GameUser>();
-
-        public IoThreadPacketDispatcher()
-        {
-        }
-
+        ConcurrentDictionary<UInt64, GameUser> UserList = new ConcurrentDictionary<UInt64, GameUser>();
+                
         public Queue<Packet> DispatchAll() { return null; }
 
         public void IncomingPacket(bool IsSystem, Session user, Packet packet)

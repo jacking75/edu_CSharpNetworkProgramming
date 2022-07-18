@@ -28,10 +28,10 @@ namespace FreeNet
 			RefNetworkService = networkService;
 		}
 
-		public void Connect(IPEndPoint remoteEndpoint, SocketOption socketOption)
+		public void Connect(IPEndPoint remoteEndpoint, bool isNoDelay)
 		{
 			ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);			
-			ClientSocket.NoDelay = socketOption.NoDelay;
+			ClientSocket.NoDelay = isNoDelay;
 
 			// 비동기 접속을 위한 event args.
 			SocketAsyncEventArgs event_arg = new SocketAsyncEventArgs();

@@ -126,11 +126,11 @@ namespace FreeNet
             ReserveClosingProc.Stop();
         }
 
-        public void Listen(string host, int port, int backlog, SocketOption socketOption)
+        public void Listen(string host, int port, int backlog, bool isNonDelay)
         {
             Listener client_listener = new Listener();
             client_listener.OnNewClientCallback += OnNewClient;
-            client_listener.Start(host, port, backlog, socketOption);
+            client_listener.Start(host, port, backlog, isNonDelay);
 
             // heartbeat.
             byte check_interval = 10;

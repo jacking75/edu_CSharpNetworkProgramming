@@ -10,9 +10,9 @@ namespace FreeNet
     public class Session
     {
         const int STATE_IDLE = 0;
-        const int STATE_CONNECTED = 0;
-        const int STATE_RESERVECLOSING = 0;
-        const int STATE_CLOSED = 0;
+        const int STATE_CONNECTED = 1;
+        const int STATE_RESERVECLOSING = 2;
+        const int STATE_CLOSED = 3;
                 
         public UInt64 UniqueId { get; private set; } = 0;
 
@@ -23,7 +23,7 @@ namespace FreeNet
         // close중복 처리 방지를 위한 플래그.
         // 0 = 연결된 상태.
         // 1 = 종료된 상태.
-        int IsClosed;
+        int IsClosed = 0;
         int CurrentState = STATE_IDLE;
 
         public Int64 ReserveClosingMillSec { get; private set; } = 0;
