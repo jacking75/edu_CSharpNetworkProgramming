@@ -7,6 +7,8 @@ namespace FreeNet;
 
 public interface IPacketDispatcher
 {
+    public void Init(UInt16 headerSize);
+
     void OnReceive(Session session, byte[] buffer, int offset, int size);
 
     void IncomingPacket(bool IsSystem, Session user, Packet packet);

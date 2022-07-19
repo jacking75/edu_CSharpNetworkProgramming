@@ -66,7 +66,7 @@ namespace FreeNet
             var msg = new Packet(this, (UInt16)NetworkDefine.SYS_NTF_CONNECTED);
             Dispatcher.IncomingPacket(true, this, msg);
 
-            if (ServerOpt.ClientHeartBeatIntervalSec > 0)
+            if (ServerOpt.HeartBeatIntervalSec > 0)
             {
                 var heartBeatPkt = new Packet(this, (UInt16)NetworkDefine.SYS_START_HEARTBEAT);
                 Dispatcher.IncomingPacket(true, this, heartBeatPkt);
@@ -132,7 +132,7 @@ namespace FreeNet
         ///		현재 진행중인 SendAsync가 완료되었을 때 큐를 검사하여 나머지 패킷을 전송한다.
         /// </summary>
         /// <param name="msg"></param>
-        void PreSend(ArraySegment<byte> data)
+        void PostSend(ArraySegment<byte> data)
         {
             if(IsConnected() == false)
             {
@@ -153,7 +153,7 @@ namespace FreeNet
                 }
 
 
-                StartSend();
+                StartSend(SendingList);
             }
             finally
             {
@@ -168,14 +168,14 @@ namespace FreeNet
 
         public void Send(ArraySegment<byte> packetData)
         {
-            PreSend(packetData);
+            PostSend(packetData);
         }
 
 
         /// <summary>
         /// 비동기 전송을 시작한다.
         /// </summary>
-        void StartSend()
+        void StartSend(List<ArraySegment<byte>> sendingList)
         {
             if (IsConnected() == false)
             {
@@ -184,7 +184,7 @@ namespace FreeNet
 
             try
             {
-                SetSendEventArgsBufferList(SendingList, SendEventArgs.BufferList);
+                SetSendEventArgsBufferList(sendingList, SendEventArgs.BufferList);
                 
                 // 비동기 전송 시작.
                 bool pending = Sock.SendAsync(SendEventArgs);
@@ -206,7 +206,7 @@ namespace FreeNet
         {
             int copyIndex = 0;
             var dataSize = 0;
-            int mtuSize = ServerOpt.SendPacketMTUSize(IsClient);
+            int mtuSize = ServerOpt.MaxPacketSize;
 
             foreach (var sendInfo in sourceList)
             {
@@ -277,8 +277,11 @@ namespace FreeNet
                     // 전송 완료된것은 리스트에서 삭제한다.
                     SendingList.RemoveRange(0, sent_index + 1);
 
-                    // 나머지 데이터들을 한방에 보낸다.
-                    StartSend();
+                    if (SendingList.Count > 0)
+                    {
+                        // 나머지 데이터들을 한방에 보낸다.
+                        StartSend(SendingList);
+                    }
                 }
                 else
                 {

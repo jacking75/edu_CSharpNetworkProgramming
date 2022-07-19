@@ -6,26 +6,25 @@ using System.Threading;
 
 namespace FreeNet;
 
-/// <summary>
 /// 패킷을 처리해서 컨텐츠를 실행하는 곳이다.
-/// FreeNet을 사용할 때 LogicMessageEntry을 참고해서 IMessageDispatcher를 상속 받는 클래스를 맞게 구현하자
-/// </summary>
 public class DefaultPacketDispatcher : IPacketDispatcher
 {
-	//TODO: Init 함수에서 값을 설정하도록 한다
-	public static readonly UInt16 HEADERSIZE = 5;
-	public static readonly UInt16 HEADER_PACKETID_POS = 2;
-
+	UInt16 HeaderSize = 0;
+	
 	ILogicQueue MessageQueue = new DoubleBufferingQueue();
     
-   
+    public void Init(UInt16 headerSize)
+    {
+		HeaderSize = headerSize;	
+	}
+
 	public void OnReceive(Session session, byte[] buffer, int offset, int size)
 	{
 		var receiveBufferOffset = offset;
 		var receiveBufferReaminSize = size;
 
 		// 남은 데이터가 있다면 계속 반복한다.
-		while (receiveBufferReaminSize >= HEADERSIZE)
+		while (receiveBufferReaminSize >= HeaderSize)
 		{
 			(var packetSize, var packetId) = GetPacketSizeAndId(buffer, receiveBufferOffset);
 			if (packetSize > receiveBufferReaminSize)
@@ -34,7 +33,7 @@ public class DefaultPacketDispatcher : IPacketDispatcher
 			}
 
 			byte[] bodyData = null;
-			var bodySize = packetSize - HEADERSIZE;
+			var bodySize = packetSize - HeaderSize;
 			if (bodySize > 0)
 			{
 				bodyData = new byte[bodySize];

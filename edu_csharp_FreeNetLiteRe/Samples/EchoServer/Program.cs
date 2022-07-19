@@ -1,86 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
 using CommandLine;
 
-namespace SampleServer;
 
-class Program
+var serverOpt = ParseCommandLine(args);
+
+var packetDispatcher = new FreeNet.DefaultPacketDispatcher();
+packetDispatcher.Init(EchoServer.PacketDef.HeaderSize);
+
+var service = new FreeNet.NetworkService(serverOpt, packetDispatcher);
+service.Initialize();
+
+bool isNoDelay = true;
+service.Listen("0.0.0.0", serverOpt.Port, 100, isNoDelay);
+
+Console.WriteLine("Started!");
+
+
+// 패킷 처리기 생성 및 실행
+var packetProcess = new EchoServer.PacketProcess(service);
+packetProcess.Start();
+
+
+while (true)
 {
-	static void Main(string[] args)
+	string input = Console.ReadLine();
+
+	if (input.Equals("users"))
 	{
-		var serverOpt = ParseCommandLine(args);
-		var service = new FreeNet.NetworkService(serverOpt, null);
-		service.Initialize();
+		Console.WriteLine(service.SessionMgr.CurrentConnectdSessionCount());
+	}
+	else if (input.Equals("exit"))
+	{
+		Console.WriteLine("Exit Process  !!!");
 
-		bool isNoDelay = true;
-		service.Listen("0.0.0.0", 7979, 100, isNoDelay);
+		packetProcess.Stop();
+		service.Stop();
 
-		Console.WriteLine("Started!");
-
-
-		// 패킷 처리기 생성 및 실행
-		var packetProcess = new PacketProcess(service);
-		packetProcess.Start();
-
-
-		while (true)
-		{
-			//Console.Write(".");
-			string input = Console.ReadLine();
-
-			if (input.Equals("users"))
-			{
-				Console.WriteLine(service.SessionMgr.CurrentConnectdSessionCount());
-			}
-			else if (input.Equals("exit"))
-			{
-				Console.WriteLine("Exit Process  !!!");
-
-				packetProcess.Stop();
-				service.Stop();
-
-				Console.WriteLine("Exit !!!");
-				break;
-			}
-
-			System.Threading.Thread.Sleep(500);
-		}
+		Console.WriteLine("Exit !!!");
+		break;
 	}
 
-
-	static FreeNet.ServerOption ParseCommandLine(string[] args)
-	{
-		var option = new FreeNet.ServerOption
-		{
-			//Port = 32452,
-			//MaxConnectionNumber = 32,
-			//Name = "EchoServer"
-		};
-
-		return option;
-	}
-
-	public class ServerOption
-	{
-		[Option("port", Required = true, HelpText = "Server Port Number")]
-		public int MaxConnectionCount { get; set; } = 10000;
-
-		[Option("port", Required = true, HelpText = "Server Port Number")]
-		public int ReserveClosingWaitMilliSecond { get; set; } = 100;
-
-		[Option("port", Required = true, HelpText = "Server Port Number")]
-		public int ReceiveSecondaryBufferSize { get; set; } = 4012;
-
-		[Option("c_recv_buff_size", Required = true, HelpText = "Server Port Number")]
-		public int ClientReceiveBufferSize { get; set; } = 4096;
-
-		[Option("c_max_packet_size", Required = true, HelpText = "Server Port Number")]
-		public int ClientMaxPacketSize { get; set; } = 1024;
-
-		[Option("c_send_mtu", Required = true, HelpText = "Server Port Number")]
-		public int ClientSendPacketMTU { get; set; } = 1024;
-
-		[Option("s_send_mtu", Required = true, HelpText = "Server Port Number")]
-		public int ServerSendPacketMTU { get; set; } = 1024;
-	}
+	System.Threading.Thread.Sleep(500);
 }
+
+
+//--port 32451 --max_conn_count 100 --recv_buff_size 4012 --max_packet_size 1024
+FreeNet.ServerOption ParseCommandLine(string[] args)
+{
+	var result = Parser.Default.ParseArguments<ServerOption>(args) as Parsed<ServerOption>;
+	if (result == null)
+	{
+		Console.WriteLine("Failed Command Line");
+		return null;
+	}
+
+	var option = new FreeNet.ServerOption
+	{
+		Port = result.Value.Port,
+		MaxConnectionCount = result.Value.MaxConnectionCount,
+		ReceiveBufferSize = result.Value.ReceiveBufferSize,
+		MaxPacketSize = result.Value.MaxPacketSize
+	};
+	option.WriteConsole();
+
+	return option;
+}
+
+public class ServerOption
+{
+	[Option("port", Required = true, HelpText = "Port Number")]
+	public int Port { get; set; } = 32451;
+
+	[Option("max_conn_count", Required = true, HelpText = "MaxConnectionCount")]
+	public int MaxConnectionCount { get; set; } = 100;
+
+	[Option("recv_buff_size", Required = true, HelpText = "ReceiveBufferSize")]
+	public int ReceiveBufferSize { get; set; } = 4012;
+
+	[Option("max_packet_size", Required = true, HelpText = "MaxPacketSize")]
+	public int MaxPacketSize { get; set; } = 1024;
+
+}
+
