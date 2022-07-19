@@ -20,7 +20,7 @@ namespace EchoServerIOThreadPacketProcess
 
     public class PacketBase
     {
-        public static readonly UInt16 HeaderSize = FreeNet.DefaultMessageResolver.HEADERSIZE;
+        public static readonly UInt16 HeaderSize = IoThreadPacketDispatcher.HEADERSIZE;
     }
 
     public class EchoPacket : PacketBase

@@ -17,11 +17,11 @@ namespace SampleServer
 
         FreeNet.IPacketDispatcher RefPacketDispatcher = null;
 
-        FreeNet.NetworkService<FreeNet.DefaultMessageResolver> RefNetworkService = null;
+        FreeNet.NetworkService RefNetworkService = null;
 
         FreeNet.ServerOption ServerOpt;
 
-        public PacketProcess(FreeNet.NetworkService<FreeNet.DefaultMessageResolver> netService)
+        public PacketProcess(FreeNet.NetworkService netService)
         {
             RefNetworkService = netService;
             RefPacketDispatcher = netService.PacketDispatcher;

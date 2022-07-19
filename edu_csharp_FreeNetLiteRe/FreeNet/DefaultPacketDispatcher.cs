@@ -12,15 +12,53 @@ namespace FreeNet;
 /// </summary>
 public class DefaultPacketDispatcher : IPacketDispatcher
 {
-    ILogicQueue MessageQueue = new DoubleBufferingQueue();
+	//TODO: Init 함수에서 값을 설정하도록 한다
+	public static readonly UInt16 HEADERSIZE = 5;
+	public static readonly UInt16 HEADER_PACKETID_POS = 2;
+
+	ILogicQueue MessageQueue = new DoubleBufferingQueue();
     
+   
+	public void OnReceive(Session session, byte[] buffer, int offset, int size)
+	{
+		var receiveBufferOffset = offset;
+		var receiveBufferReaminSize = size;
 
-    public DefaultPacketDispatcher()
-    {            
-    }
-                   
+		// 남은 데이터가 있다면 계속 반복한다.
+		while (receiveBufferReaminSize >= HEADERSIZE)
+		{
+			(var packetSize, var packetId) = GetPacketSizeAndId(buffer, receiveBufferOffset);
+			if (packetSize > receiveBufferReaminSize)
+			{
+				break;
+			}
 
-    public void IncomingPacket(bool IsSystem, Session user, Packet packet)
+			byte[] bodyData = null;
+			var bodySize = packetSize - HEADERSIZE;
+			if (bodySize > 0)
+			{
+				bodyData = new byte[bodySize];
+			}
+
+			var packet = new Packet(packetId, bodyData);
+			IncomingPacket(false, session, packet);
+
+			receiveBufferOffset += packetSize;
+			receiveBufferReaminSize -= packetSize;
+		}
+
+		//간결한 구현을 위해
+		//receiveBufferReaminSize가 남는 상황은 고려하지 않는다!!!
+	}
+
+	(UInt16, UInt16) GetPacketSizeAndId(byte[] buffer, int offset)
+	{
+		var packetSize = FastBinaryRead.UInt16(buffer, offset);
+		var packetId = FastBinaryRead.UInt16(buffer, offset + 2);
+		return (packetSize, packetId);
+	}
+
+	public void IncomingPacket(bool IsSystem, Session user, Packet packet)
     {
         // 여긴 IO스레드에서 호출된다.
         // 완성된 패킷을 메시지큐에 넣어준다.

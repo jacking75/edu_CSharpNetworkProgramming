@@ -13,7 +13,7 @@ namespace EchoServerIOThreadPacketProcess
 
 			var serverOpt = new FreeNet.ServerOption();
 						
-			var service = new FreeNet.NetworkService<FreeNet.DefaultMessageResolver>(serverOpt);
+			var service = new FreeNet.NetworkService(serverOpt);
 			service.Initialize();
 						
 			bool isNoDelay = true;

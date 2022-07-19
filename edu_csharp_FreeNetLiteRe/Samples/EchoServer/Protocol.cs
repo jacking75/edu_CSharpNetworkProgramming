@@ -21,7 +21,7 @@ namespace SampleServer
 
     public class PacketBase
     {
-        public static readonly UInt16 HeaderSize = FreeNet.DefaultMessageResolver.HEADERSIZE;
+        public static readonly UInt16 HeaderSize = FreeNet.DefaultPacketDispatcher.HEADERSIZE;
     }
 
     public class EchoPacket : PacketBase

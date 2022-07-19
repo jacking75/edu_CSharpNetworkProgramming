@@ -9,7 +9,7 @@ using System.Net.Sockets;
 
 namespace FreeNet;
 
-public class NetworkService<TMessageResolver> where TMessageResolver : IMessageResolver, new()
+public class NetworkService
 {
     SocketAsyncEventArgsPool ReceiveEventArgsPool;
     SocketAsyncEventArgsPool SendEventArgsPool;
@@ -147,15 +147,11 @@ public class NetworkService<TMessageResolver> where TMessageResolver : IMessageR
     // 스레드 세이프 하지 않다
     public UInt64 MakeSequenceIdForSession() { return ++SequenceId; }
     
-    /// 새로운 클라이언트가 접속 성공 했을 때 호출됩니다.
-    /// AcceptAsync의 콜백 매소드에서 호출되며 여러 스레드에서 동시에 호출될 수 있기 때문에 공유자원에 접근할 때는 주의해야 합니다.
     void OnNewClient(Socket client_socket)
     {
         // UserToken은 매번 새로 생성하여 깨끗한 인스턴스로 넣어준다.
         var uniqueId = MakeSequenceIdForSession();
-        var messageResolver = new TMessageResolver();
-        messageResolver.Init(ServerOpt.ReceiveSecondaryBufferSize);
-        var user_token = new Session(true, uniqueId, PacketDispatcher, messageResolver, ServerOpt);
+        var user_token = new Session(true, uniqueId, PacketDispatcher, ServerOpt);
         user_token.OnSessionClosed += OnSessionClosed;
 
         SessionMgr.Add(user_token);

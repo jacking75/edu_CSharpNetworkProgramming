@@ -13,17 +13,18 @@ namespace FreeNet
 	/// Endpoint정보를 받아서 서버에 접속한다.
 	/// 접속하려는 서버 하나당 인스턴스 한개씩 생성하여 사용하면 된다.
 	/// </summary>
-	public class TCPConnector<TMessageResolver> where TMessageResolver : IMessageResolver, new()
+	public class TCPConnector
 	{
 		public Action<Session> ConnectedCallback = null;
 
 		// 원격지 서버와의 연결을 위한 소켓.
 		Socket ClientSocket;
 
-		NetworkService<TMessageResolver> RefNetworkService;
+		//TODO: NetworkService 객체를 포함하지 않는다 
+		NetworkService RefNetworkService;
 
 		
-		public TCPConnector(NetworkService<TMessageResolver> networkService)
+		public TCPConnector(NetworkService networkService)
 		{
 			RefNetworkService = networkService;
 		}
@@ -51,18 +52,13 @@ namespace FreeNet
 		{
 			if (e.SocketError == SocketError.Success)
 			{
-				var uniqueId = RefNetworkService.MakeSequenceIdForSession();
-				var messageResolver = new TMessageResolver();
-				messageResolver.Init(RefNetworkService.ServerOpt.ReceiveSecondaryBufferSize);
-				Session token = new Session(false, uniqueId, RefNetworkService.PacketDispatcher, messageResolver, RefNetworkService.ServerOpt);
+				var uniqueId = RefNetworkService.MakeSequenceIdForSession();				
+				Session token = new Session(false, uniqueId, RefNetworkService.PacketDispatcher, RefNetworkService.ServerOpt);
 
 				// 데이터 수신 준비.
 				RefNetworkService.OnConnectCompleted(ClientSocket, token);
 
-				if (ConnectedCallback != null)
-				{
-					ConnectedCallback(token);
-				}
+				ConnectedCallback(token);				
 			}
 			else
 			{

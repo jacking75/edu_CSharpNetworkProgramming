@@ -32,10 +32,7 @@ namespace FreeNet
 
         public SocketAsyncEventArgs ReceiveEventArgs { get; private set; }
         public SocketAsyncEventArgs SendEventArgs { get; private set; }
-
-        // 바이트를 패킷 형식으로 해석해주는 해석기.
-        IMessageResolver RefMsgResolver;
-       
+                
         // BufferList적용을 위해 queue에서 list로 변경.
         List<ArraySegment<byte>> SendingList;
         
@@ -48,17 +45,14 @@ namespace FreeNet
         
         // heartbeat.
         public UInt64 LatestHeartbeatTime;
-
-
-        public Session(bool isClient, UInt64 uniqueId, IPacketDispatcher dispatcher, IMessageResolver messageResolver, ServerOption serverOption)
+                
+        public Session(bool isClient, UInt64 uniqueId, IPacketDispatcher dispatcher, ServerOption serverOption)
         {
             IsClient = isClient;
             UniqueId = uniqueId;
             Dispatcher = dispatcher;
             ServerOpt = serverOption;
             
-            RefMsgResolver = messageResolver;
-
             SendingList = new List<ArraySegment<byte>>();
             
             LatestHeartbeatTime = (UInt64)DateTime.Now.Ticks;
@@ -94,17 +88,9 @@ namespace FreeNet
         /// <param name="transfered"></param>
         public void OnReceive(byte[] buffer, int offset, int transfered)
         {
-            RefMsgResolver.OnReceive(buffer, offset, transfered, OnMessageCompleted);
+            Dispatcher.OnReceive(this, buffer, offset, transfered);
         }
-
-        void OnMessageCompleted(Packet packet)
-        {
-            packet.Owner = this;
-
-            // 로직 스레드의 큐를 타고 호출되도록 함.
-            Dispatcher.IncomingPacket(false, this, packet);
-        }
-
+        
         public void Close()
         {
             // 중복 수행을 막는다.
