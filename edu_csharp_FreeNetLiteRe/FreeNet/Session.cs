@@ -11,19 +11,12 @@ namespace FreeNet
     {
         const int STATE_IDLE = 0;
         const int STATE_CONNECTED = 1;
-        const int STATE_RESERVECLOSING = 2;
-        const int STATE_CLOSED = 3;
+        const int STATE_CLOSED = 2;
                 
         public UInt64 UniqueId { get; private set; } = 0;
 
-        public bool IsClient { get; private set; } = true;
-
         ServerOption ServerOpt;
 
-        // close중복 처리 방지를 위한 플래그.
-        // 0 = 연결된 상태.
-        // 1 = 종료된 상태.
-        int IsClosed = 0;
         int CurrentState = STATE_IDLE;
 
         public Int64 ReserveClosingMillSec { get; private set; } = 0;
@@ -35,33 +28,27 @@ namespace FreeNet
                 
         // BufferList적용을 위해 queue에서 list로 변경.
         List<ArraySegment<byte>> SendingList;
-        
-        // sending_list lock처리에 사용되는 객체.
-        SpinLock LOCK_SENDING_QUEUE = new SpinLock();
+        object LOCK_SENDING_QUEUE;
 
         IPacketDispatcher Dispatcher;
 
-        public Action<Session> OnSessionClosed;
+        public Action<Session> OnEventSessionClosed;
+        public Action<object, SocketAsyncEventArgs> OnEventSendCompleted;
         
-        // heartbeat.
-        public UInt64 LatestHeartbeatTime;
                 
         public Session(bool isClient, UInt64 uniqueId, IPacketDispatcher dispatcher, ServerOption serverOption)
         {
-            IsClient = isClient;
             UniqueId = uniqueId;
             Dispatcher = dispatcher;
             ServerOpt = serverOption;
             
             SendingList = new List<ArraySegment<byte>>();
-            
-            LatestHeartbeatTime = (UInt64)DateTime.Now.Ticks;
+            LOCK_SENDING_QUEUE = new object();
         }
 
         public void OnConnected()
         {
             CurrentState = STATE_CONNECTED;
-            IsClosed = 0;
             
             var msg = new Packet(this, (UInt16)NetworkDefine.SYS_NTF_CONNECTED);
             Dispatcher.IncomingPacket(true, this, msg);
@@ -94,14 +81,8 @@ namespace FreeNet
         public void Close()
         {
             // 중복 수행을 막는다.
-            if (Interlocked.CompareExchange(ref this.IsClosed, 1, 0) == 1)
+            if (Interlocked.Exchange(ref CurrentState, STATE_CLOSED) == STATE_CLOSED)
             {
-                return;
-            }
-
-            if (CurrentState == STATE_CLOSED)
-            {
-                // already closed.
                 return;
             }
 
@@ -116,7 +97,7 @@ namespace FreeNet
 
             SendingList.Clear();
             
-            OnSessionClosed(this);
+            OnEventSessionClosed(this);
 
             // 호출하지 않고 있음
             var msg = new Packet(this, (UInt16)NetworkDefine.SYS_NTF_CLOSED);
@@ -140,10 +121,8 @@ namespace FreeNet
                 return;
             }
                         
-            var gotLock = false;
-            try
+            lock (this.LOCK_SENDING_QUEUE)
             {
-                LOCK_SENDING_QUEUE.Enter(ref gotLock);
                 SendingList.Add(data);
 
                 if (SendingList.Count > 1)
@@ -153,17 +132,8 @@ namespace FreeNet
                     return;
                 }
 
-
-                StartSend(SendingList);
-            }
-            finally
-            {
-                // Only give up the lock if you actually acquired it
-                if (gotLock)
-                {
-                    LOCK_SENDING_QUEUE.Exit();
-                }
-            }            
+                AsyncSendIO(SendingList);
+            }                        
         }
 
 
@@ -176,7 +146,7 @@ namespace FreeNet
         /// <summary>
         /// 비동기 전송을 시작한다.
         /// </summary>
-        void StartSend(List<ArraySegment<byte>> sendingList)
+        void AsyncSendIO(List<ArraySegment<byte>> sendingList)
         {
             if (IsConnected() == false)
             {
@@ -185,26 +155,42 @@ namespace FreeNet
 
             try
             {
-                SetSendEventArgsBufferList(sendingList, SendEventArgs.BufferList);
+                //SendEventArgs.BufferList = sendingList;
+                // MTU 사이즈 이내만 보내도록 한다
+                {
+                    List<ArraySegment<byte>> tempList = new();
+                    var dataSize = 0;
+                    
+                    foreach (var sendInfo in sendingList)
+                    {
+                        if ((dataSize + sendInfo.Count) <= ServerOpt.MaxPacketSize)
+                        {
+                            dataSize += sendInfo.Count;
+
+                            tempList.Add(sendInfo);
+                        }
+                    }
+
+                    SendEventArgs.BufferList = tempList;
+                }
                 
-                // 비동기 전송 시작.
                 bool pending = Sock.SendAsync(SendEventArgs);
                 if (!pending)
                 {
-                    ProcessSend(SendEventArgs);
+                    OnEventSendCompleted(null, SendEventArgs);
                 }
             }
             catch (Exception e)
             {
-                SetReserveClosing(ServerOpt.ReserveClosingWaitMilliSecond);
-
+                Close();
                 Console.WriteLine("send error!! close socket. " + e.Message);
-                throw new Exception(e.Message, e);
             }
         }
 
         int SetSendEventArgsBufferList(List<ArraySegment<byte>> sourceList, IList<ArraySegment<byte>> targetList)
         {
+            List<ArraySegment<byte>> tempList = new();
+
             int copyIndex = 0;
             var dataSize = 0;
             int mtuSize = ServerOpt.MaxPacketSize;
@@ -216,42 +202,30 @@ namespace FreeNet
                 {
                     ++copyIndex;
                     dataSize += sendInfo.Count;
+
+                    tempList.Add(sendInfo);
                 }
             }
 
-            for (int i = 0; i < copyIndex; ++i)
-            {
-                targetList.Add(sourceList[i]);
-            }
+            targetList = tempList;
 
             return copyIndex;
         }
         
-        static object cs_count = new object();
         
-        /// <summary>
         /// 비동기 전송 완료시 호출되는 콜백 매소드.
-        /// </summary>
-        /// <param name="e"></param>
-        public void ProcessSend(SocketAsyncEventArgs e)
+        public bool SendCompleted(SocketAsyncEventArgs e)
         {
-            if(IsConnected() == false)
-            {
-                return;
-            }
-
             if (e.BytesTransferred <= 0 || e.SocketError != SocketError.Success)
             {
                 // 연결이 끊겨서 이미 소켓이 종료된 경우일 것이다.
                 //Console.WriteLine(string.Format("Failed to send. error {0}, transferred {1}", e.SocketError, e.BytesTransferred));
-                return;
+                return false; 
             }
 
-            var gotLock = false;
-            try
+            
+            lock (this.LOCK_SENDING_QUEUE)
             {
-                LOCK_SENDING_QUEUE.Enter(ref gotLock);
-
                 // 리스트에 들어있는 데이터의 총 바이트 수.
                 var size = SendingList.Sum(obj => obj.Count);
 
@@ -281,7 +255,7 @@ namespace FreeNet
                     if (SendingList.Count > 0)
                     {
                         // 나머지 데이터들을 한방에 보낸다.
-                        StartSend(SendingList);
+                        AsyncSendIO(SendingList);
                     }
                 }
                 else
@@ -290,14 +264,8 @@ namespace FreeNet
                     SendingList.Clear();
                 }
             }
-            finally
-            {
-                // Only give up the lock if you actually acquired it
-                if (gotLock)
-                {
-                    LOCK_SENDING_QUEUE.Exit();
-                }
-            }
+
+            return true;
         }
 
 
@@ -307,16 +275,7 @@ namespace FreeNet
         /// </summary>
         public void DisConnect(bool isForce)
         {
-            SetReserveClosing(ServerOpt.ReserveClosingWaitMilliSecond);
-        }
-
-
-        public void SetReserveClosing(int waitMilliSecond)
-        {
-            if (Interlocked.CompareExchange(ref CurrentState, STATE_RESERVECLOSING, STATE_CONNECTED) == STATE_CONNECTED)
-            {
-                ReserveClosingMillSec = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + waitMilliSecond;
-            }
+            Close();
         }
 
         public bool IsConnected()

@@ -27,7 +27,7 @@ while (true)
 
 	if (input.Equals("users"))
 	{
-		Console.WriteLine(service.SessionMgr.CurrentConnectdSessionCount());
+		Console.WriteLine(service.CurrentConnectdSessionCount());
 	}
 	else if (input.Equals("exit"))
 	{

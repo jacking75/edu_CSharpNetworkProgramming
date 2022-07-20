@@ -90,14 +90,7 @@ class PacketProcess
                     var packetData = responsePkt.ToPacket(PROTOCOL_ID.ECHO, packet.BodyData);
                     packet.Owner.Send(new ArraySegment<byte>(packetData, 0, packetData.Length));                                                
                 }
-                break;
-            case PROTOCOL_ID.HEARTBEAT_UPDATE_NOTIFY:
-                {
-                    Console.WriteLine($"heartbeat: {DateTime.Now}");
-
-                    packet.Owner.LatestHeartbeatTime = (UInt64)DateTime.Now.Ticks;
-                }
-                break;
+                break;            
 
             default:
                 {

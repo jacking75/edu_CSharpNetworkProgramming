@@ -17,22 +17,16 @@ public class NetworkService
     Listener ClientListener = new();
 
     public IPacketDispatcher PacketDispatcher { get; private set; }
-            
-    public SessionManager SessionMgr { get; private set; }
-
+        
     public ServerOption ServerOpt { get; private set; }
 
+    Int64 ConnectdSessionCount;
+
     UInt64 SequenceId = 0;
-
-    // close 했을 때 호출해야 한다
-    ReserveClosingProcess ReserveClosingProc = new ReserveClosingProcess();
-
-
+        
     public NetworkService(ServerOption serverOption, IPacketDispatcher packetDispatcher = null)
     {
-        ServerOpt = serverOption;
-        SessionMgr = new SessionManager();
-
+        ServerOpt = serverOption;        
         PacketDispatcher = packetDispatcher;        
     }
 
@@ -40,14 +34,11 @@ public class NetworkService
     public void Initialize()
     {
         CreateEventArgsPool(ServerOpt.MaxConnectionCount, ServerOpt.ReceiveBufferSize);
- 
-        ReserveClosingProc.Start(ServerOpt.ReserveClosingWaitMilliSecond);
     }
 
     public void Stop()
     {
         ClientListener.Stop();
-        ReserveClosingProc.Stop();
     }
 
     public void Listen(string host, int port, int backlog, bool isNonDelay)
@@ -55,12 +46,13 @@ public class NetworkService
         ClientListener = new Listener();
         ClientListener.OnNewClientCallback += OnNewClient;
         ClientListener.Start(host, port, backlog, isNonDelay);
-
-        // heartbeat.
-        byte check_interval = 10;
-        SessionMgr.StartHeartbeatChecking(check_interval, check_interval);
     }
-       
+
+    public Int64 CurrentConnectdSessionCount()
+    {
+        Interlocked.Read(ref ConnectdSessionCount);
+        return ConnectdSessionCount;
+    }
 
 
     // 스레드 세이프 하지 않다
@@ -96,12 +88,12 @@ public class NetworkService
             {
                 //Pre-allocate a set of reusable SocketAsyncEventArgs
                 arg = new SocketAsyncEventArgs();
-                arg.Completed += new EventHandler<SocketAsyncEventArgs>(SendCompleted);
+                arg.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendCompleted);
                 arg.UserToken = null;
 
                 // send버퍼는 보낼때 설정한다. SetBuffer가 아닌 BufferList를 사용.
                 arg.SetBuffer(null, 0, 0);
-
+                
                 // add SocketAsyncEventArg to the pool
                 SendEventArgsPool.Push(arg);
             }
@@ -115,10 +107,9 @@ public class NetworkService
         // UserToken은 매번 새로 생성하여 깨끗한 인스턴스로 넣어준다.
         var uniqueId = MakeSequenceIdForSession();
         var user_token = new Session(isAccepted, uniqueId, PacketDispatcher, ServerOpt);
-        user_token.OnSessionClosed += OnSessionClosed;
-
-        SessionMgr.Add(user_token);
-
+        user_token.OnEventSessionClosed += OnSessionClosed;
+        user_token.OnEventSendCompleted += OnSendCompleted;
+                
         // 플에서 하나 꺼내와 사용한다.
         SocketAsyncEventArgs receive_args = this.ReceiveEventArgsPool.Pop();
         SocketAsyncEventArgs send_args = this.SendEventArgsPool.Pop();
@@ -162,7 +153,7 @@ public class NetworkService
         }
     }
 
-    void SendCompleted(object sender, SocketAsyncEventArgs e)
+    void OnSendCompleted(object sender, SocketAsyncEventArgs e)
     {
         var session = e.UserToken as Session;
         if (session == null || session.IsConnected() == false)
@@ -172,11 +163,14 @@ public class NetworkService
 
         try
         {
-            session.ProcessSend(e);
+            if(session.SendCompleted(e) == false)
+            {
+                session.Close();
+            }
         }
         catch (Exception)
         {
-            session.SetReserveClosing(ServerOpt.ReserveClosingWaitMilliSecond);
+            session.Close();
         }
     }
 
@@ -200,15 +194,12 @@ public class NetworkService
         }
         else
         {
-            session.SetReserveClosing(ServerOpt.ReserveClosingWaitMilliSecond);
-
+            session.Close();
         }
     }
 
     void OnSessionClosed(Session session)
     {
-        SessionMgr.Remove(session);
-
         ReceiveEventArgsPool.Push(session.ReceiveEventArgs);        
         SendEventArgsPool.Push(session.SendEventArgs);
         

@@ -10,19 +10,14 @@ namespace FreeNet;
 /// </summary>
 public class Packet
 {
-	public Session Owner { get; set; }
-
-	public byte[] BodyData { get; set; }
-	
-	
-
+	public Session Owner { get; private set; }
+	public byte[] BodyData { get; private set; }
 	public UInt16 Id { get; private set; }
 
 			
-	public Packet(UInt16 packetId, byte[] body)
+	public Packet(Session owner, UInt16 packetId, byte[] body)
 	{
-		// 참조로만 보관하여 작업한다.
-		// 복사가 필요하면 별도로 구현해야 한다.
+		Owner = owner;
 		BodyData = body;
 		Id = packetId;			
 	}

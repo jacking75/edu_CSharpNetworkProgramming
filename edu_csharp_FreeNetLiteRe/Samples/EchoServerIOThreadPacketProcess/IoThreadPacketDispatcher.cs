@@ -40,7 +40,7 @@ class IoThreadPacketDispatcher : IPacketDispatcher
                 bodyData = new byte[bodySize];
             }
 
-            var packet = new Packet(packetId, bodyData);
+            var packet = new Packet(session, packetId, bodyData);
             IncomingPacket(false, session, packet);
 
             receiveBufferOffset += packetSize;
