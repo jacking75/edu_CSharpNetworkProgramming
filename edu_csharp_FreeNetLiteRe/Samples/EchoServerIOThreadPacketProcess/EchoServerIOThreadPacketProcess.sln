@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoServerIOThreadPacketProcess", "EchoServerIOThreadPacketProcess.csproj", "{82EBAF29-ED16-4731-856F-02189A03DF70}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeNet", "..\..\FreeNet\FreeNet.csproj", "{D1C40A04-55DA-4459-B3BE-C4D7342CBE36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeNetLite", "..\..\FreeNetLite\FreeNetLite.csproj", "{D1C40A04-55DA-4459-B3BE-C4D7342CBE36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

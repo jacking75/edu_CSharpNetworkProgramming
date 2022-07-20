@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FreeNet\FreeNet.csproj" />
+    <ProjectReference Include="..\..\FreeNetLite\FreeNetLite.csproj" />
   </ItemGroup>
 
 </Project>
