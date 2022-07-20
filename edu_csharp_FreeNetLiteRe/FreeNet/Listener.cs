@@ -45,6 +45,7 @@ class Listener
 			ListenSocket.Bind(endpoint);
 			ListenSocket.Listen(backlog);
 
+			IsStarted = true;
 			WorkerThread = new Thread(Run);
 			WorkerThread.Start();
 		}
@@ -72,6 +73,8 @@ class Listener
 	/// 하나의 접속 처리가 완료된 후 다음 accept를 수행하기 위해서 event객체를 통해 흐름을 제어하도록 구현되어 있습니다.
 	void Run()
 	{
+		Console.WriteLine("Listen Start");
+
 		while (IsStarted)
 		{
 			try
@@ -88,7 +91,7 @@ class Listener
 
 				if (IsStarted == false)
 				{
-					return;
+					break;
 				}
 				else
 				{
@@ -96,5 +99,7 @@ class Listener
 				}
 			}							
 		}
+
+		Console.WriteLine("Listen End");
 	}
 }

@@ -14,8 +14,6 @@ service.Initialize();
 bool isNoDelay = true;
 service.Listen("0.0.0.0", serverOpt.Port, 100, isNoDelay);
 
-Console.WriteLine("Started!");
-
 
 while (true)
 {
@@ -50,6 +48,7 @@ FreeNet.ServerOption ParseCommandLine(string[] args)
 
 	var option = new FreeNet.ServerOption
 	{
+		Port = result.Value.Port,
 		MaxConnectionCount = result.Value.MaxConnectionCount,
 		ReceiveBufferSize = result.Value.ReceiveBufferSize,
 		MaxPacketSize = result.Value.MaxPacketSize
@@ -61,16 +60,16 @@ FreeNet.ServerOption ParseCommandLine(string[] args)
 
 public class ServerOption
 {
-	[Option("port", Required = true, HelpText = "Port Number")]
-	public int Port { get; set; } = 32451;
+	[Option("port", Required = false, HelpText = "Port Number")]
+	public int Port { get; set; } = 11021;
 
-	[Option("max_conn_count", Required = true, HelpText = "MaxConnectionCount")]
+	[Option("max_conn_count", Required = false, HelpText = "MaxConnectionCount")]
 	public int MaxConnectionCount { get; set; } = 100;
 
-	[Option("recv_buff_size", Required = true, HelpText = "ReceiveBufferSize")]
+	[Option("recv_buff_size", Required = false, HelpText = "ReceiveBufferSize")]
 	public int ReceiveBufferSize { get; set; } = 4012;
 
-	[Option("max_packet_size", Required = true, HelpText = "MaxPacketSize")]
+	[Option("max_packet_size", Required = false, HelpText = "MaxPacketSize")]
 	public int MaxPacketSize { get; set; } = 1024;
 
 }

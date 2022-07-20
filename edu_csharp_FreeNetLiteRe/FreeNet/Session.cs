@@ -118,6 +118,7 @@ namespace FreeNet
             
             OnSessionClosed(this);
 
+            // 호출하지 않고 있음
             var msg = new Packet(this, (UInt16)NetworkDefine.SYS_NTF_CLOSED);
             Dispatcher.IncomingPacket(true, this, msg);                
         }

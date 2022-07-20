@@ -24,6 +24,7 @@ public class NetworkService
 
     UInt64 SequenceId = 0;
 
+    // close 했을 때 호출해야 한다
     ReserveClosingProcess ReserveClosingProc = new ReserveClosingProcess();
 
 
@@ -109,6 +110,8 @@ public class NetworkService
 
     void OnNewClient(bool isAccepted, Socket client_socket)
     {
+        Console.WriteLine("OnNewClient [[[");
+
         // UserToken은 매번 새로 생성하여 깨끗한 인스턴스로 넣어준다.
         var uniqueId = MakeSequenceIdForSession();
         var user_token = new Session(isAccepted, uniqueId, PacketDispatcher, ServerOpt);
@@ -126,7 +129,9 @@ public class NetworkService
 
         user_token.OnConnected();
 
-        BeginReceive(client_socket, receive_args, send_args);          
+        BeginReceive(client_socket, receive_args, send_args);
+
+        Console.WriteLine("OnNewClient ]]]");
     }
 
     void BeginReceive(Socket socket, SocketAsyncEventArgs receive_args, SocketAsyncEventArgs send_args)

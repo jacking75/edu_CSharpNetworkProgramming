@@ -24,7 +24,7 @@ namespace csharp_test_client
         Queue<PacketData> RecvPacketQueue = new Queue<PacketData>();
         Queue<byte[]> SendPacketQueue = new Queue<byte[]>();
 
-        System.Windows.Threading.DispatcherTimer dispatcherUITimer;
+        Timer dispatcherUITimer;
 
 
         public mainForm()
@@ -43,9 +43,9 @@ namespace csharp_test_client
             NetworkSendThread.Start();
 
             IsBackGroundProcessRunning = true;
-            dispatcherUITimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherUITimer = new Timer();
             dispatcherUITimer.Tick += new EventHandler(BackGroundProcess);
-            dispatcherUITimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dispatcherUITimer.Interval = 100;
             dispatcherUITimer.Start();
 
             btnDisconnect.Enabled = false;

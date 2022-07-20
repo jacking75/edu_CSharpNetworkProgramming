@@ -10,8 +10,7 @@ public enum PROTOCOL_ID : UInt16
 {
 	BEGIN = 0,
 
-	ECHO_REQ = 1,
-	ECHO_ACK = 2,
+	ECHO = 101,
             
     HEARTBEAT_START_NOTIFY = 3, // 서버에서 클라이언트로 허트 비트 시작을 알림
     HEARTBEAT_UPDATE_NOTIFY = 5, // 클라이언트에서 허버로 허트 비트 통보

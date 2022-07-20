@@ -80,14 +80,14 @@ class PacketProcess
         //Console.WriteLine("protocol id " + protocol);
         switch (protocol)
         {
-            case PROTOCOL_ID.ECHO_REQ:
+            case PROTOCOL_ID.ECHO:
                 {
                     var requestPkt = new EchoPacket();
                     requestPkt.Decode(packet.BodyData);
                     Console.WriteLine(string.Format("text {0}", requestPkt.Data));
 
                     var responsePkt = new EchoPacket();
-                    var packetData = responsePkt.ToPacket(PROTOCOL_ID.ECHO_ACK, packet.BodyData);
+                    var packetData = responsePkt.ToPacket(PROTOCOL_ID.ECHO, packet.BodyData);
                     packet.Owner.Send(new ArraySegment<byte>(packetData, 0, packetData.Length));                                                
                 }
                 break;
