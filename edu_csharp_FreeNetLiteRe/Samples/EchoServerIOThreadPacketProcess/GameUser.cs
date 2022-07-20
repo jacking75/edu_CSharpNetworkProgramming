@@ -1,5 +1,5 @@
 ﻿using System;
-using FreeNet;
+using FreeNetLite;
 
 namespace EchoServerIOThreadPacketProcess;
 

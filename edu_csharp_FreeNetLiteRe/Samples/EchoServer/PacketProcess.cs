@@ -15,13 +15,13 @@ class PacketProcess
 
     Thread LogicThread = null;
 
-    FreeNet.IPacketDispatcher RefPacketDispatcher = null;
+    FreeNetLite.IPacketDispatcher RefPacketDispatcher = null;
 
-    FreeNet.NetworkService RefNetworkService = null;
+    FreeNetLite.NetworkService RefNetworkService = null;
 
-    FreeNet.ServerOption ServerOpt;
+    FreeNetLite.ServerOption ServerOpt;
 
-    public PacketProcess(FreeNet.NetworkService netService)
+    public PacketProcess(FreeNetLite.NetworkService netService)
     {
         RefNetworkService = netService;
         RefPacketDispatcher = netService.PacketDispatcher;
@@ -72,7 +72,7 @@ class PacketProcess
         }
     }
 
-    void OnMessage(FreeNet.Packet packet)
+    void OnMessage(FreeNetLite.Packet packet)
     {
         // ex)
         PROTOCOL_ID protocol = (PROTOCOL_ID)packet.Id;
@@ -103,7 +103,7 @@ class PacketProcess
         }
     }
 
-    bool OnSystemPacket(FreeNet.Packet packet)
+    bool OnSystemPacket(FreeNetLite.Packet packet)
     {
         var session = packet.Owner;
 
@@ -113,7 +113,7 @@ class PacketProcess
         switch (packet.Id)
         {
             // 이 처리는 꼭 해줘야 한다.
-            case FreeNet.NetworkDefine.SYS_NTF_CONNECTED:
+            case FreeNetLite.NetworkDefine.SYS_NTF_CONNECTED:
                 Console.WriteLine($"SYS_NTF_CONNECTED: {session.UniqueId}");
 
                 var user = new GameUser(session);
@@ -121,13 +121,13 @@ class PacketProcess
                 return true;
 
             // 이 처리는 꼭 해줘야 한다.
-            case FreeNet.NetworkDefine.SYS_NTF_CLOSED:
+            case FreeNetLite.NetworkDefine.SYS_NTF_CLOSED:
                 Console.WriteLine($"SYS_NTF_CLOSED: {session.UniqueId}");
                 //RefNetworkService.OnSessionClosed(session); 
                 UserList.Remove(session.UniqueId);
                 return true;
                 
-            case FreeNet.NetworkDefine.SYS_START_HEARTBEAT:
+            case FreeNetLite.NetworkDefine.SYS_START_HEARTBEAT:
                 var notifyPkt = new HeartBeatStartNtfPacket();
                 notifyPkt.IntervalSec = ServerOpt.HeartBeatIntervalSec;
                 var pakcetData = notifyPkt.ToPacket();

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeNet", "FreeNet\FreeNet.csproj", "{B9F8E84C-5F6F-4FEC-8B5E-B6D0D5253FBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeNetLite", "FreeNetLite\FreeNetLite.csproj", "{B9F8E84C-5F6F-4FEC-8B5E-B6D0D5253FBB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoServer", "Samples\EchoServer\EchoServer.csproj", "{9EB61E40-FC9B-4110-9A5F-5A6FD2255A4F}"
 EndProject

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 public enum SocketAsyncEventArgsPoolBufferMgrType
 {

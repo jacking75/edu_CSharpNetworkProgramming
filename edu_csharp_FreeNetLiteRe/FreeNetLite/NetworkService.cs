@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 public class NetworkService
 {

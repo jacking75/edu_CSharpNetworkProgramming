@@ -38,8 +38,8 @@ public class EchoPacket
         var packetLen = (UInt16)(PacketDef.HeaderSize + bodyData.Length);
         var packet = new byte[packetLen];
 
-        FreeNet.FastBinaryWrite.UInt16(packet, 0, packetLen);
-        FreeNet.FastBinaryWrite.UInt16(packet, 2, (UInt16)packetId);
+        FreeNetLite.FastBinaryWrite.UInt16(packet, 0, packetLen);
+        FreeNetLite.FastBinaryWrite.UInt16(packet, 2, (UInt16)packetId);
         Buffer.BlockCopy(bodyData, 0, packet, PacketDef.HeaderSize, bodyData.Length);
         return packet;
     }
@@ -59,15 +59,15 @@ public class HeartBeatReqPacket
         var packetLen = (UInt16)(PacketDef.HeaderSize + 2);
         var packet = new byte[packetLen];
 
-        FreeNet.FastBinaryWrite.UInt16(packet, 0, packetLen);
-        FreeNet.FastBinaryWrite.UInt16(packet, 2, FreeNet.NetworkDefine.SYS_START_HEARTBEAT);
-        FreeNet.FastBinaryWrite.UInt16(packet, 5, IntervalSec);
+        FreeNetLite.FastBinaryWrite.UInt16(packet, 0, packetLen);
+        FreeNetLite.FastBinaryWrite.UInt16(packet, 2, FreeNetLite.NetworkDefine.SYS_START_HEARTBEAT);
+        FreeNetLite.FastBinaryWrite.UInt16(packet, 5, IntervalSec);
         return packet;
     }
 
     public void Decode(byte[] bodyData)
     {
-        IntervalSec = FreeNet.FastBinaryRead.UInt16(bodyData, 0);
+        IntervalSec = FreeNetLite.FastBinaryRead.UInt16(bodyData, 0);
     }
 }
 

@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 class Listener
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using FreeNet;
+using FreeNetLite;
 using System.Collections.Concurrent;
 
 namespace EchoServerIOThreadPacketProcess;
@@ -99,7 +99,7 @@ class IoThreadPacketDispatcher : IPacketDispatcher
     }
      
   
-    bool OnSystemPacket(FreeNet.Packet packet)
+    bool OnSystemPacket(Packet packet)
     {
         var session = packet.Owner;
 
@@ -109,7 +109,7 @@ class IoThreadPacketDispatcher : IPacketDispatcher
         switch (packet.Id)
         {
             // 이 처리는 꼭 해줘야 한다.
-            case FreeNet.NetworkDefine.SYS_NTF_CONNECTED:
+            case NetworkDefine.SYS_NTF_CONNECTED:
                 Console.WriteLine("SYS_NTF_CONNECTED : " + session.UniqueId);
 
                 var user = new GameUser(session);
@@ -117,7 +117,7 @@ class IoThreadPacketDispatcher : IPacketDispatcher
                 return true;
 
             // 이 처리는 꼭 해줘야 한다.
-            case FreeNet.NetworkDefine.SYS_NTF_CLOSED:
+            case NetworkDefine.SYS_NTF_CLOSED:
                 Console.WriteLine("SYS_NTF_CLOSED : " + session.UniqueId);
                 //RefNetworkService.OnSessionClosed(session); 
                 UserList.TryRemove(session.UniqueId, out var temp);

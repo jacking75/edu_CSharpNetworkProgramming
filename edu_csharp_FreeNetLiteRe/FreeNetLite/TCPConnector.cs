@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 // Endpoint정보를 받아서 서버에 접속한다.
 // 접속하려는 서버 하나당 인스턴스 한개씩 생성하여 사용하면 된다.

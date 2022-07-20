@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 /// 패킷을 처리해서 컨텐츠를 실행하는 곳이다.
 public class DefaultPacketDispatcher : IPacketDispatcher

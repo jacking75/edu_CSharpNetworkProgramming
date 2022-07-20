@@ -8,7 +8,7 @@ var serverOpt = ParseCommandLine(args);
 var packetDispatcher = new EchoServerIOThreadPacketProcess.IoThreadPacketDispatcher();
 packetDispatcher.Init(EchoServerIOThreadPacketProcess.PacketDef.HeaderSize);
 
-var service = new FreeNet.NetworkService(serverOpt);
+var service = new FreeNetLite.NetworkService(serverOpt);
 service.Initialize();
 
 bool isNoDelay = true;
@@ -37,7 +37,7 @@ while (true)
 
 
 //--port 32451 --max_conn_count 100 --recv_buff_size 4012 --max_packet_size 1024
-FreeNet.ServerOption ParseCommandLine(string[] args)
+FreeNetLite.ServerOption ParseCommandLine(string[] args)
 {
 	var result = Parser.Default.ParseArguments<ServerOption>(args) as Parsed<ServerOption>;
 	if (result == null)
@@ -46,7 +46,7 @@ FreeNet.ServerOption ParseCommandLine(string[] args)
 		return null;
 	}
 
-	var option = new FreeNet.ServerOption
+	var option = new FreeNetLite.ServerOption
 	{
 		Port = result.Value.Port,
 		MaxConnectionCount = result.Value.MaxConnectionCount,

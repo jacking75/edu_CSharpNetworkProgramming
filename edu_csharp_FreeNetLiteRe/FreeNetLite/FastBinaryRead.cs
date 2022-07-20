@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace FreeNet;
+namespace FreeNetLite;
 
 public class FastBinaryRead
 {  
