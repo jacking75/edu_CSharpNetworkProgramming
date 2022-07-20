@@ -2,16 +2,15 @@
 컴투스 C# 네트워크 프로그래밍 학습 저장소  
   
   
-이 저장소에 있는 것을 다 공부했다면 [FreeNetLite ](https://github.com/jacking75/FreeNetLite)에 있는 것을 분석 후 리팩토링하고, 예제 서버를 만들어본다.  
-  
-  
 ## 학습
 - [C# 네트워크 API 설명](https://github.com/jacking75/com2usStudy_CSharpNetworkProgramming/tree/hellowoori/_Study )
 - [C# 네트워크 프로그래밍 기초](https://docs.google.com/document/d/e/2PACX-1vSQHI4OAHL_zOa1DjJRiW7arDLy160tE2uo1TWvoe8PtPKct8bR0VP84iYQnLhjYoix0-HoJkdvoHNC/pub )  
 - [C# 네트워크 프로그래밍 비동기I/O](https://docs.google.com/document/d/e/2PACX-1vRhA1jfWuZs8mUHHN9Cv0VyesDCD7exPbgy6ZjdCGMHNNu4O_gyhysyzwpVfJmmmcCOG--JCgL8htxW/pub )  
-  
-  
-  
+- [(인프런) C# 네트워크 프로그래밍](https://inf.run/2yN5 )    
+- [(유튜브) C# 네트워크 프로그래밍 공부하기](https://www.youtube.com/watch?v=lMVdPDvElKg )  
+   
+    
+   
 ## 고성능 네트워크 관련 글
   
 ### .NET Framework의 비동기 네트워크 라이브러리 성능 개선
@@ -32,10 +31,11 @@
     - 메모리풀 및 정적 메모리 사용을 닷넷 네트워크 프로그래밍에서 어떻게 적용하는지 나타내고 있다. 
     - 닷넷은 기본적으로 동적 메모리 할당이 네이티브 보다는 좋겠지만 그래도 메모리 재사용 보다는 성능 측면에서 좋을 수가 없고, 
     - 또 가비지 컬렉션에 대한 부담이 있다.
-- CodeProject읭 'C# SocketAsyncEventArgs High Performance Socket Code'강좌
+- CodeProject의 'C# SocketAsyncEventArgs High Performance Socket Code'강좌
     - 위의 예제보다 더 자세하고 부족한 부분을 추가해서 잘 설명하고 있다. 강추 
     - http://www.codeproject.com/Articles/83102/C-SocketAsyncEventArgs-High-Performance-Socket-Cod
-  
+- [SocketAsyncEventArgs - 'SocketAsyncEventArgs'의 이해](https://blog.danggun.net/3596 )  
+- [C# 채팅 프로그램 #01 IOCP - EAP 패턴을 이용한 비동기 TCP/IP 서버 구현 (SocketAsyncEventArgs)](https://jeongkyun-it.tistory.com/87 )
   
 ### High performance asynchronous awaiting sockets
 - http://stackoverflow.com/questions/17093206/high-performance-asynchronous-awaiting-sockets
