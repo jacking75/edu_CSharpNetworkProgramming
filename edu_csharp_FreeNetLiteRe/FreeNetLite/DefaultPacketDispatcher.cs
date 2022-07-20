@@ -18,7 +18,7 @@ public class DefaultPacketDispatcher : IPacketDispatcher
 		HeaderSize = headerSize;	
 	}
 
-	public void OnReceive(Session session, byte[] buffer, int offset, int size)
+	public void ProcessReceiveData(Session session, byte[] buffer, int offset, int size)
 	{
 		var receiveBufferOffset = offset;
 		var receiveBufferReaminSize = size;

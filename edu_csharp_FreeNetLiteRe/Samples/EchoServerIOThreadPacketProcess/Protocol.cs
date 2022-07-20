@@ -10,10 +10,9 @@ public enum PROTOCOL_ID : short
 {
 	BEGIN = 0,
 
-	ECHO_REQ = 1,
-	ECHO_ACK = 2,
+    ECHO = 101,
 
-	END
+    END
 }
 
 
@@ -49,26 +48,4 @@ public class EchoPacket
         Data = Encoding.UTF8.GetString(bodyData);
     }
 }
-
-
-public class HeartBeatReqPacket
-{
-    public UInt16 IntervalSec; // 허트비트 간격 (초)
-    public byte[] ToPacket()
-    {
-        var packetLen = (UInt16)(PacketDef.HeaderSize + 2);
-        var packet = new byte[packetLen];
-
-        FreeNetLite.FastBinaryWrite.UInt16(packet, 0, packetLen);
-        FreeNetLite.FastBinaryWrite.UInt16(packet, 2, FreeNetLite.NetworkDefine.SYS_START_HEARTBEAT);
-        FreeNetLite.FastBinaryWrite.UInt16(packet, 5, IntervalSec);
-        return packet;
-    }
-
-    public void Decode(byte[] bodyData)
-    {
-        IntervalSec = FreeNetLite.FastBinaryRead.UInt16(bodyData, 0);
-    }
-}
-
 

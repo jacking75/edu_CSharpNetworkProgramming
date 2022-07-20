@@ -13,10 +13,10 @@ namespace FreeNetLite;
 public class TCPConnector
 {
 	//NetworkService 클래스의 OnConnectCompleted와 연결한다
-	public Action<Session> ConnectedCallback = null;
+	public Action<Session> OnEventConnected = null;
 
 	//NetworkService 클래스의 OnNewClient와 연결한다
-	public Action<bool, Socket> OnNewSessionCallback = null;
+	public Action<bool, Socket> OnEventNewSession = null;
 
 
 	// 원격지 서버와의 연결을 위한 소켓.
@@ -44,7 +44,6 @@ public class TCPConnector
 
 
 		bool pending = ClientSocket.ConnectAsync(event_arg);
-
 		if (pending == false)
 		{
 			OnConnectCompleted(null, event_arg);
@@ -56,7 +55,7 @@ public class TCPConnector
 		if (e.SocketError == SocketError.Success)
 		{
 			// 데이터 수신 준비.
-			OnNewSessionCallback(false, ClientSocket);
+			OnEventNewSession(false, ClientSocket);
 		}
 		else
 		{

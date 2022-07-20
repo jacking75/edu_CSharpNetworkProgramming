@@ -12,7 +12,7 @@ var service = new FreeNetLite.NetworkService(serverOpt);
 service.Initialize();
 
 bool isNoDelay = true;
-service.Listen("0.0.0.0", serverOpt.Port, 100, isNoDelay);
+service.Start("0.0.0.0", serverOpt.Port, 100, isNoDelay);
 
 
 while (true)

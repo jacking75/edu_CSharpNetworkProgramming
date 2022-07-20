@@ -11,7 +11,7 @@ var service = new FreeNetLite.NetworkService(serverOpt, packetDispatcher);
 service.Initialize();
 
 bool isNoDelay = true;
-service.Listen("0.0.0.0", serverOpt.Port, 100, isNoDelay);
+service.Start("0.0.0.0", serverOpt.Port, 100, isNoDelay);
 
 Console.WriteLine("Started!");
 

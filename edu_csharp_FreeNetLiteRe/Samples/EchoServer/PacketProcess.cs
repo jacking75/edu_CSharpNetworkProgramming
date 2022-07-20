@@ -125,14 +125,7 @@ class PacketProcess
                 Console.WriteLine($"SYS_NTF_CLOSED: {session.UniqueId}");
                 //RefNetworkService.OnSessionClosed(session); 
                 UserList.Remove(session.UniqueId);
-                return true;
-                
-            case FreeNetLite.NetworkDefine.SYS_START_HEARTBEAT:
-                var notifyPkt = new HeartBeatStartNtfPacket();
-                notifyPkt.IntervalSec = ServerOpt.HeartBeatIntervalSec;
-                var pakcetData = notifyPkt.ToPacket();
-                session.Send(new ArraySegment<byte>(pakcetData, 0, pakcetData.Length));
-                return true;
+                return true;            
         }                     
 
         return false;

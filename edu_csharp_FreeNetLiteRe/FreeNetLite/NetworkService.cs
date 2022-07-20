@@ -41,7 +41,7 @@ public class NetworkService
         ClientListener.Stop();
     }
 
-    public void Listen(string host, int port, int backlog, bool isNonDelay)
+    public void Start(string host, int port, int backlog, bool isNonDelay)
     {
         ClientListener = new Listener();
         ClientListener.OnNewClientCallback += OnNewClient;
@@ -79,7 +79,6 @@ public class NetworkService
                 arg.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveCompleted);
                 arg.UserToken = null;
                          
-                // add SocketAsyncEventArg to the pool
                 ReceiveEventArgsPool.Allocate(arg);
             }
 
@@ -94,7 +93,6 @@ public class NetworkService
                 // send버퍼는 보낼때 설정한다. SetBuffer가 아닌 BufferList를 사용.
                 arg.SetBuffer(null, 0, 0);
                 
-                // add SocketAsyncEventArg to the pool
                 SendEventArgsPool.Push(arg);
             }
         }
@@ -125,6 +123,28 @@ public class NetworkService
         Console.WriteLine("OnNewClient ]]]");
     }
 
+
+    void OnSendCompleted(object sender, SocketAsyncEventArgs e)
+    {
+        var session = e.UserToken as Session;
+        if (session == null || session.IsConnected() == false)
+        {
+            return;
+        }
+
+        try
+        {
+            if (session.SendCompleted(e) == false)
+            {
+                session.Close();
+            }
+        }
+        catch (Exception)
+        {
+            session.Close();
+        }
+    }
+
     void BeginReceive(Socket socket, SocketAsyncEventArgs receive_args, SocketAsyncEventArgs send_args)
     {
         // receive_args, send_args 아무곳에서나 꺼내와도 된다. 둘다 동일한 CUserToken을 물고 있다.
@@ -140,7 +160,7 @@ public class NetworkService
         bool pending = socket.ReceiveAsync(receive_args);
         if (!pending)
         {
-            OnReceive(receive_args);
+            ReceiveCompleted(null, receive_args);
         }
     }
 
@@ -150,27 +170,6 @@ public class NetworkService
         {
             OnReceive(e);
             return;
-        }
-    }
-
-    void OnSendCompleted(object sender, SocketAsyncEventArgs e)
-    {
-        var session = e.UserToken as Session;
-        if (session == null || session.IsConnected() == false)
-        {
-            return;
-        }
-
-        try
-        {
-            if(session.SendCompleted(e) == false)
-            {
-                session.Close();
-            }
-        }
-        catch (Exception)
-        {
-            session.Close();
         }
     }
 
@@ -185,11 +184,10 @@ public class NetworkService
         if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
         {
             session.OnReceive(e.Buffer, e.Offset, e.BytesTransferred);
-
-            
+                        
             if (session.Sock.ReceiveAsync(e) == false)
             {
-                OnReceive(e);
+                ReceiveCompleted(null, e);
             }
         }
         else
@@ -205,8 +203,5 @@ public class NetworkService
         
         session.SetEventArgs(null, null);
     }
-
-
-
 
 }

@@ -10,6 +10,7 @@ namespace FreeNetLite;
 internal interface IBufferManager
 {
     void Init(int bufferCountOrMaxTakeBufferSize, int bufferSizeOrbucketCount);
+
     bool SetBuffer(SocketAsyncEventArgs args);
-    void FreeBuffer(SocketAsyncEventArgs args);
+
 }
