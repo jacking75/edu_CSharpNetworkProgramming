@@ -1,0 +1,1 @@
+EchoServer\bin\Debug\net6.0\EchoServer.exe --port 32451 --max_conn_count 100 --recv_buff_size 4012 --max_packet_size 1024
