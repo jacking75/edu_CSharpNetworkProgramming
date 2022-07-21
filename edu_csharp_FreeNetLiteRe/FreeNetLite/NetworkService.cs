@@ -24,7 +24,7 @@ public class NetworkService
 
     UInt64 SequenceId = 0;
         
-    public NetworkService(ServerOption serverOption, IPacketDispatcher packetDispatcher = null)
+    public NetworkService(ServerOption serverOption, IPacketDispatcher packetDispatcher)
     {
         ServerOpt = serverOption;        
         PacketDispatcher = packetDispatcher;        

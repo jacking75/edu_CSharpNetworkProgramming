@@ -59,7 +59,7 @@ public class Session
 
     public void OnReceive(byte[] buffer, int offset, int transfered)
     {
-        Dispatcher.ProcessReceiveData(this, buffer, offset, transfered);
+        Dispatcher.DispatchPacket(this, buffer, offset, transfered);
     }
 
     public void Close()

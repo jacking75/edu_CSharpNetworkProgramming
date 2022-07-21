@@ -10,15 +10,15 @@ namespace FreeNetLite;
 public class DefaultPacketDispatcher : IPacketDispatcher
 {
 	UInt16 HeaderSize = 0;
-	
-	ILogicQueue MessageQueue = new DoubleBufferingQueue();
+
+	DoubleBufferingQueue MessageQueue = new();
     
     public void Init(UInt16 headerSize)
     {
 		HeaderSize = headerSize;	
 	}
 
-	public void ProcessReceiveData(Session session, byte[] buffer, int offset, int size)
+	public void DispatchPacket(Session session, byte[] buffer, int offset, int size)
 	{
 		var receiveBufferOffset = offset;
 		var receiveBufferReaminSize = size;

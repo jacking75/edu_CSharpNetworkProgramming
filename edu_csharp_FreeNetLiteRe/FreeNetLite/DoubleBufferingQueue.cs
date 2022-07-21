@@ -12,7 +12,7 @@ namespace FreeNetLite;
 /// 로직스레드에서 큐를 뒤바꾼뒤(swap) 쌓아놓은 패킷을 가져가 처리한다.
 /// 참고 : http://roadster.egloos.com/m/4199854
 /// </summary>
-class DoubleBufferingQueue : ILogicQueue
+class DoubleBufferingQueue
 {
     // 실제 데이터가 들어갈 큐.
     Queue<Packet> Queue1;

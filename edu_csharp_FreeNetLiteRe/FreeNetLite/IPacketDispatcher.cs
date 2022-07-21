@@ -9,7 +9,7 @@ public interface IPacketDispatcher
 {
     public void Init(UInt16 headerSize);
 
-    void ProcessReceiveData(Session session, byte[] buffer, int offset, int size);
+    void DispatchPacket(Session session, byte[] buffer, int offset, int size);
 
     void IncomingPacket(bool IsSystem, Session user, Packet packet);
 

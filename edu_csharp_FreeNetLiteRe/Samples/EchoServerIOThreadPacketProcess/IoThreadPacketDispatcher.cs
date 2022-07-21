@@ -19,7 +19,7 @@ class IoThreadPacketDispatcher : IPacketDispatcher
         HeaderSize = headerSize;
     }
 
-    public void ProcessReceiveData(Session session, byte[] buffer, int offset, int size)
+    public void DispatchPacket(Session session, byte[] buffer, int offset, int size)
     {
         var receiveBufferOffset = offset;
         var receiveBufferReaminSize = size;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FreeNetLite;
 
-public class BufferManagerAsync : IBufferManager
+public class BufferManagerAsync
 {
     byte[] TotalBuffer;
     ConcurrentBag<int> FreeIndexPool = new();

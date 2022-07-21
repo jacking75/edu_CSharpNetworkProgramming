@@ -9,8 +9,8 @@ namespace FreeNetLite;
 
 public class SocketAsyncEventArgsPool
 {
-    IBufferManager BufferManager = new BufferManagerAsync();
-    ConcurrentBag<SocketAsyncEventArgs> Pool = new ConcurrentBag<SocketAsyncEventArgs>();
+    BufferManagerAsync BufferManager = new();
+    ConcurrentBag<SocketAsyncEventArgs> Pool = new();
 
 
     /// 초기화

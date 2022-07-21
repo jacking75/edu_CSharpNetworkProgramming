@@ -36,7 +36,7 @@ class PacketProcess
     {
         IsStart = true;
 
-        LogicThread = new Thread(DoLogic);
+        LogicThread = new Thread(Run);
         LogicThread.Start();
     }
 
@@ -49,7 +49,7 @@ class PacketProcess
     /// <summary>
     /// 로직 스레드. 
     /// </summary>
-    void DoLogic()
+    void Run()
     {
         // 반복문을 빠져나오도록 true 대신 bool 변수 사용하기
         while (IsStart)

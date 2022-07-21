@@ -8,7 +8,7 @@ var serverOpt = ParseCommandLine(args);
 var packetDispatcher = new EchoServerIOThreadPacketProcess.IoThreadPacketDispatcher();
 packetDispatcher.Init(EchoServerIOThreadPacketProcess.PacketDef.HeaderSize);
 
-var service = new FreeNetLite.NetworkService(serverOpt);
+var service = new FreeNetLite.NetworkService(serverOpt, packetDispatcher);
 service.Initialize();
 
 bool isNoDelay = true;
@@ -24,11 +24,11 @@ while (true)
 	{
 		Console.WriteLine(service.CurrentConnectdSessionCount());
 	}
-	else if (input.Equals("Exit Process"))
+	else if (input.Equals("exit"))
 	{
 		service.Stop();
 
-		Console.WriteLine("Exit !!!");
+		Console.WriteLine("Exit Process !!!");
 		break;
 	}
 
