@@ -8,7 +8,6 @@ public class ServerOption
 {
     public int Port { get; set; } = 32451;
     public int MaxConnectionCount { get; set; } = 1000;
-    public int ReserveClosingWaitMilliSecond { get; set; } = 256;                
     public int ReceiveBufferSize { get; set; } = 4096;
     public int MaxPacketSize { get; set; } = 1024;        
 
@@ -19,7 +18,6 @@ public class ServerOption
         Console.WriteLine("[ ServerOption ]");
         Console.WriteLine($"Port: {Port}");
         Console.WriteLine($"MaxConnectionCount: {MaxConnectionCount}");
-        Console.WriteLine($"ReserveClosingWaitMilliSecond: {ReserveClosingWaitMilliSecond}");
         Console.WriteLine($"ReceiveBufferSize: {ReceiveBufferSize}");
         Console.WriteLine($"MaxPacketSize: {MaxPacketSize}");
     }
