@@ -17,7 +17,6 @@ service.Start("0.0.0.0", serverOpt.Port, 100, isNoDelay);
 
 while (true)
 {
-	//Console.Write(".");
 	string input = Console.ReadLine();
 
 	if (input.Equals("users"))

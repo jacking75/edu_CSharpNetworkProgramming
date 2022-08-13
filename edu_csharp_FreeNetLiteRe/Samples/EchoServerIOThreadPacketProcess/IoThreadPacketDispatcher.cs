@@ -10,11 +10,12 @@ class IoThreadPacketDispatcher : IPacketDispatcher
 {
     UInt16 HeaderSize = 0;
 
-    ConcurrentDictionary<UInt64, GameUser> UserList = new ConcurrentDictionary<UInt64, GameUser>();
-            
+    ConcurrentDictionary<UInt64, GameUser> UserList = new ();
+    
+    
     public Queue<Packet> DispatchAll() { return null; }
 
-    public void Init(UInt16 headerSize)
+    public void Init(UInt16 headerSize) 
     {
         HeaderSize = headerSize;
     }
