@@ -2,7 +2,7 @@
 FASTER는 마이크로소프트가 오픈 소스로 공개한 로그, KV 저장소 라이브러리 이다.  
   [FASTER 라이브러리 소개](https://docs.google.com/document/d/e/2PACX-1vTJwlb0oqCxnfB6BQ4owsdbmtJau-HlU_nD0e7j5nX4RBCw7gKEwzxEefGTxpgdQjCC6NV5NpmFvCqT/pub )  
 KV 저장소 기능을 사용할 때 FASTER에서 제공하는 서버를 그대로 사용할 수 있다.  
-이 글에서는 TCP Server 부분의 코드를 일부 가져왔다. 코드가 간단해서 어떻게 서버에서 클라이언트 접속을 처리할 수 있는지 참고기에 좋다.  
+이 글에서는 TCP Server 부분의 코드를 일부 가져왔다. 코드가 간단해서 어떻게 서버에서 클라이언트 접속을 처리할 수 있는지 참고 하기에 좋다.  
 아래 코드의 위치: https://github.com/microsoft/FASTER/blob/main/cs/remote/src/FASTER.server/Servers/FasterServerTcp.cs  
 코드에서 소켓 동작과 관련 없는 것은 제거했다.   
 닷넷 5 이상을 타겟으로 닷넷 5 아래 버전에 대한 코드는 제거했다.
