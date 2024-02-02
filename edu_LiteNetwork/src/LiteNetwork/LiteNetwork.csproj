@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+		<LangVersion>10.0</LangVersion>
+		<Version>2.4.0</Version>
+		<Authors>Filipe GOMES PEIXOTO</Authors>
+		<Product>LiteNetwork</Product>
+		<Copyright>Filipe GOMES PEIXOTO © 2019-2024</Copyright>
+		<Company>Filipe GOMES PEIXOTO</Company>
+		<PackageProjectUrl>https://github.com/Eastrall/LiteNetwork</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Eastrall/LiteNetwork</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<Nullable>enable</Nullable>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageTags>socket,server,tcp,network,networking,lite,packet,client</PackageTags>
+		<Configurations>Debug;Release;Package</Configurations>
+		<Description>LiteNetwork is a simple and fast networking library built with C# and compatible with .NET Standard 2, .NET 5, 6 and 7. Its main goal is to simply the creation of basic socket servers over the TCP/IP protocol. It has been initialy developed for game development networking, but can also be used for other purposes.</Description>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<NeutralLanguage>en-001</NeutralLanguage>
+		<AssemblyVersion>2.4.0</AssemblyVersion>
+		<FileVersion>2.4.0</FileVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup Condition="('$(TargetFramework)' == 'netstandard2.0')">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[3.1.20,5)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[3.1.20,5)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[3.1.20,5)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="('$(TargetFramework)' == 'net6.0')">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6,7)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[6,7)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[6,7)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="('$(TargetFramework)' == 'net7.0')">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[7,8)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[7,8)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[7,8)" />
+	</ItemGroup>
+	
+	<ItemGroup Condition="('$(TargetFramework)' == 'net8.0')">
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[8,)" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="[8,)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[8,)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="Resources\icon.png" />
+		<None Include="Resources\icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+
+</Project>
