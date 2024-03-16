@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcpServiceConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ReceviceBuffer>41000</ReceviceBuffer>
+  <SendBuffer>41000</SendBuffer>
+  <SendCount>100</SendCount>
+  <MaxConnectionCount>10</MaxConnectionCount>
+  <UpdateSessionIntval>50</UpdateSessionIntval>
+  <SessionReceiveTimeout>30000</SessionReceiveTimeout>
+  <MessageFactoryAssemblyName>NetService</MessageFactoryAssemblyName>
+  <MessageFactoryTypeName>NetService.Message.SimpleBinaryMessageFactory</MessageFactoryTypeName>
+  <Log>file</Log>
+  <LogLevel>Info</LogLevel>
+  <Listeners>
+    <Listener>
+      <port>11110</port>
+      <backlog>128</backlog>
+    </Listener>
+  </Listeners>
+</TcpServiceConfig>
