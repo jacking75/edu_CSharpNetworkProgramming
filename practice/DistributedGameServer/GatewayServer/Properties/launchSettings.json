@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GatewayServer": {
+      "commandName": "Project",
+      "commandLineArgs": "--serverIndex 201 --name GatewayServer --port 11101 --maxConnectionNumber 256  --maxRequestLength 1024 --receiveBufferSize 16384 --sendBufferSize 16384 --redisAddress 10.14.1.182:6379 --maxUserNumber 150 --mqServerAddress 127.0.0.1 --mqServerAddressL 127.0.0.1"
+    }
+  }
+}

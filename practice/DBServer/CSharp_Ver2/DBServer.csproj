@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>DBServer2</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\ServerBin\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\ServerBin\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Cache\GameData.cs" />
+    <Compile Remove="MqDataProcess.cs" />
+    <Compile Remove="MqDataProcessManager.cs" />
+    <Compile Remove="PKHandler\UpdateGameData.cs" />
+    <Compile Remove="UserManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="MessagePack" Version="2.2.60" />
+    <PackageReference Include="MySqlConnector" Version="1.0.1" />
+    <PackageReference Include="NATS.Client" Version="0.10.1" />
+    <PackageReference Include="Z.ExtensionMethods" Version="2.1.1" />
+    <PackageReference Include="ZLogger" Version="1.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSharp_ServerCommon\ServerCommon.csproj" />
+  </ItemGroup>
+
+</Project>

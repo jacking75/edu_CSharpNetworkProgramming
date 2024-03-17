@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LobbyServer": {
+      "commandName": "Project",
+      "commandLineArgs": "--serverIndex 301 --name LobbyServer --threadCount 2  --lobbyCountPerThread 2 --lobbyMaxUserCount 4 --lobbyStartNumber 0 --mqServerAddress 127.0.0.1 --mqServerAddressGW 127.0.0.1 DBRequest --mqServerAddressG 127.0.0.1 --mqServerAddressDB 127.0.0.1"
+    }
+  }
+}

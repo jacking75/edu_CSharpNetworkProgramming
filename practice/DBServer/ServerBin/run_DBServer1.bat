@@ -1,0 +1,1 @@
+dotnet netcoreapp3.1\DBServer1.dll --serverIndex 1 --name DBServer --threadCount 8  --mqServerAddress 127.0.0.1 --mySqlConnectionString server=127.0.0.1;user=root;password=123qwe();port=3306;database=GameDB;
