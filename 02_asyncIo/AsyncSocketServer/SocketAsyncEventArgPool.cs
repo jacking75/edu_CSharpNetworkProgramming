@@ -27,7 +27,10 @@ namespace SocketAsyncServer
         /// <param name="item">The SocketAsyncEventArgs instance to add to the pool</param>
         public void Push(SocketAsyncEventArgs item)
         {
-            if (item == null) { throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null"); }
+            if (item == null) { 
+                throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null"); 
+            }
+
             lock (m_pool)
             {
                 m_pool.Push(item);

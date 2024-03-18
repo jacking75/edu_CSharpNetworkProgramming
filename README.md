@@ -3,8 +3,14 @@
   
 ## 학습
 - [C# 네트워크 API 설명](https://github.com/jacking75/com2usStudy_CSharpNetworkProgramming/tree/hellowoori/_Study )
+    - 2019년에 만든어진 것으로 이 저장소에 다른 브랜치에 만들어졌다
+    - C# 기본 네트워크 API에 대해서 설명
 - [C# 네트워크 프로그래밍 기초](https://docs.google.com/document/d/e/2PACX-1vSQHI4OAHL_zOa1DjJRiW7arDLy160tE2uo1TWvoe8PtPKct8bR0VP84iYQnLhjYoix0-HoJkdvoHNC/pub )  
+    - 이 문서를 보고 `01_basic` 디렉토리에 있는 샘플 코드를 분석하는 것이 좋다
 - [C# 네트워크 프로그래밍 비동기I/O](https://docs.google.com/document/d/e/2PACX-1vRhA1jfWuZs8mUHHN9Cv0VyesDCD7exPbgy6ZjdCGMHNNu4O_gyhysyzwpVfJmmmcCOG--JCgL8htxW/pub )  
+    - 이 문서를 보고 `02_asyncIo` 디렉토리에 있는 샘플 코드를 분석하는 것이 좋다
+	- `AsyncSocketServer` 는 `SocketAsyncEventArgs`을 사용한 코드이다.
+	- `AsyncSocketServer2` 는 소켓 서버를 좀 더 효율적으로 동작하도록 만들어진 코드이다.
 - [(인프런) C# 네트워크 프로그래밍](https://inf.run/2yN5 )    
 - [(유튜브) C# 네트워크 프로그래밍 공부하기](https://www.youtube.com/watch?v=lMVdPDvElKg )  
    

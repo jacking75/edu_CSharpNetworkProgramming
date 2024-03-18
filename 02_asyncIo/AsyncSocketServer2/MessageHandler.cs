@@ -4,74 +4,70 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
-namespace AsyncSocketServer2
+namespace AsyncSocketServer2;
+
+class MessageHandler
 {
-    class MessageHandler
+
+    public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken receiveSendToken, Int32 remainingBytesToProcess)
     {
+        bool incomingTcpMessageIsReady = false;
 
-        public bool HandleMessage(SocketAsyncEventArgs receiveSendEventArgs, DataHoldingUserToken receiveSendToken, Int32 remainingBytesToProcess)
+        // 이전 수신 작업에서 생성되지 않은 경우, 완전한 메시지를 저장할 배열을 생성합니다.
+        if (receiveSendToken.receivedMessageBytesDoneCount == 0)
         {
-            bool incomingTcpMessageIsReady = false;
-            
-            //Create the array where we'll store the complete message, 
-            //if it has not been created on a previous receive op.
-            if (receiveSendToken.receivedMessageBytesDoneCount == 0)
+            if (Program.watchProgramFlow == true)   // 테스트용
             {
-                if (Program.watchProgramFlow == true)   //for testing
-                {
-                    Program.testWriter.WriteLine("MessageHandler, creating receive array " + receiveSendToken.TokenId);
-                }
-
-                                 
-                receiveSendToken.theDataHolder.dataMessageReceived = new Byte[receiveSendToken.lengthOfCurrentIncomingMessage];
+                Program.testWriter.WriteLine("MessageHandler, receive 배열 생성 " + receiveSendToken.TokenId);
             }
 
-            // Remember there is a receiveSendToken.receivedPrefixBytesDoneCount
-            // variable, which allowed us to handle the prefix even when it
-            // requires multiple receive ops. In the same way, we have a 
-            // receiveSendToken.receivedMessageBytesDoneCount variable, which
-            // helps us handle message data, whether it requires one receive
-            // operation or many.
-            if (remainingBytesToProcess + receiveSendToken.receivedMessageBytesDoneCount == receiveSendToken.lengthOfCurrentIncomingMessage)
-            {
-                // If we are inside this if-statement, then we got 
-                // the end of the message. In other words,
-                // the total number of bytes we received for this message matched the 
-                // message length value that we got from the prefix.
 
-                if (Program.watchProgramFlow == true)   //for testing
-                {
-                    Program.testWriter.WriteLine("MessageHandler, length is right for " + receiveSendToken.TokenId);
-                }
-
-                // Write/append the bytes received to the byte array in the 
-                // DataHolder object that we are using to store our data.
-                Buffer.BlockCopy(receiveSendEventArgs.Buffer, receiveSendToken.receiveMessageOffset, receiveSendToken.theDataHolder.dataMessageReceived, receiveSendToken.receivedMessageBytesDoneCount, remainingBytesToProcess);
-
-                incomingTcpMessageIsReady = true;
-            }
-
-            else
-            {
-                // If we are inside this else-statement, then that means that we
-                // need another receive op. We still haven't got the whole message,
-                // even though we have examined all the data that was received.
-                // Not a problem. In SocketListener.ProcessReceive we will just call
-                // StartReceive to do another receive op to receive more data.
-
-                if (Program.watchProgramFlow == true)   //for testing
-                {
-                    Program.testWriter.WriteLine(" MessageHandler, length is short for " + receiveSendToken.TokenId);
-                }
-
-                Buffer.BlockCopy(receiveSendEventArgs.Buffer, receiveSendToken.receiveMessageOffset, receiveSendToken.theDataHolder.dataMessageReceived, receiveSendToken.receivedMessageBytesDoneCount, remainingBytesToProcess);
-
-                receiveSendToken.receiveMessageOffset = receiveSendToken.receiveMessageOffset - receiveSendToken.recPrefixBytesDoneThisOp;
-                
-                receiveSendToken.receivedMessageBytesDoneCount += remainingBytesToProcess;
-            }
-
-            return incomingTcpMessageIsReady;
+            receiveSendToken.theDataHolder.dataMessageReceived = new Byte[receiveSendToken.lengthOfCurrentIncomingMessage];
         }
+
+        // receiveSendToken.receivedPrefixBytesDoneCount 변수를 기억하세요.
+        // 이 변수는 접두사를 처리하는 데 도움이 되었으며,
+        // 여러 개의 수신 작업이 필요한 경우에도 처리할 수 있도록 해줍니다.
+        // 마찬가지로, receiveSendToken.receivedMessageBytesDoneCount 변수도 있습니다.
+        // 이 변수는 메시지 데이터를 처리하는 데 도움이 되며,
+        // 수신 작업이 한 번이든 여러 번이든 상관없이 처리할 수 있도록 해줍니다.
+        if (remainingBytesToProcess + receiveSendToken.receivedMessageBytesDoneCount == receiveSendToken.lengthOfCurrentIncomingMessage)
+        {
+            // 이 if 문 안에 들어왔다면, 메시지의 끝에 도달했습니다.
+            // 즉, 이 메시지에 대해 수신한 총 바이트 수가 접두사에서 얻은 메시지 길이 값과 일치합니다.
+
+            if (Program.watchProgramFlow == true)   // 테스트용
+            {
+                Program.testWriter.WriteLine("MessageHandler, 길이가 올바름 " + receiveSendToken.TokenId);
+            }
+
+            // 수신한 바이트를 DataHolder 개체에 있는 바이트 배열에 기록/추가합니다.
+            Buffer.BlockCopy(receiveSendEventArgs.Buffer, receiveSendToken.receiveMessageOffset, receiveSendToken.theDataHolder.dataMessageReceived, receiveSendToken.receivedMessageBytesDoneCount, remainingBytesToProcess);
+
+            incomingTcpMessageIsReady = true;
+        }
+
+        else
+        {
+            // 이 else 문 안에 들어왔다면, 추가 수신 작업이 필요합니다.
+            // 아직 메시지를 완전히 받지 못했으며,
+            // 수신한 데이터를 모두 검사했습니다.
+            // 문제 없습니다. SocketListener.ProcessReceive에서
+            // StartReceive를 호출하여 추가 데이터를 수신하기 위해
+            // 다른 수신 작업을 수행합니다.
+
+            if (Program.watchProgramFlow == true)   // 테스트용
+            {
+                Program.testWriter.WriteLine(" MessageHandler, 길이가 부족함 " + receiveSendToken.TokenId);
+            }
+
+            Buffer.BlockCopy(receiveSendEventArgs.Buffer, receiveSendToken.receiveMessageOffset, receiveSendToken.theDataHolder.dataMessageReceived, receiveSendToken.receivedMessageBytesDoneCount, remainingBytesToProcess);
+
+            receiveSendToken.receiveMessageOffset = receiveSendToken.receiveMessageOffset - receiveSendToken.recPrefixBytesDoneThisOp;
+
+            receiveSendToken.receivedMessageBytesDoneCount += remainingBytesToProcess;
+        }
+
+        return incomingTcpMessageIsReady;
     }
 }

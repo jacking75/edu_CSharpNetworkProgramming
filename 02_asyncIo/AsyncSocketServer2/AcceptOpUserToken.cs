@@ -6,19 +6,19 @@ namespace AsyncSocketServer2
 {
     class AcceptOpUserToken
     {
-        //The only reason to use this UserToken in our app is to give it an identifier,
-        //so that you can see it in the program flow. Otherwise, you would not need it.
+        // 앱에서 이 UserToken을 사용하는 유일한 이유는 식별자를 부여하여 프로그램 흐름에서 확인할 수 있게 하기 위함입니다.
+        // 그렇지 않으면 필요하지 않을 것입니다.
 
-        
-        private Int32 id; //for testing only
-        internal Int32 socketHandleNumber; //for testing only
+
+        private Int32 id; // 테스트용으로만 사용됩니다.
+        internal Int32 socketHandleNumber; // 테스트용으로만 사용됩니다.
 
         public AcceptOpUserToken(Int32 identifier)
         {
             id = identifier;
-            
 
-            //if (Program.watchProgramFlow == true)   //for testing
+
+            //if (Program.watchProgramFlow == true)   // 테스트용
             //{
             //    Program.testWriter.WriteLine("AcceptOpUserToken constructor, idOfThisObject " + id);
             //}
