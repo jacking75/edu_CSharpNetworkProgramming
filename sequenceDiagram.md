@@ -77,51 +77,54 @@ sequenceDiagram
   
 ```mermaid
 sequenceDiagram
+    participant Client
     participant Main
     participant AsyncServer
     participant BeginAccept
     participant AcceptCallback
     participant ReceiveCallback
     participant SendCallback
-    
-    Main->>AsyncServer: Start
-    Note over AsyncServer: Setup Socket Listener
+
+    Main->>AsyncServer: AsyncServer()
+    Note over AsyncServer: Initialize Socket Listener
     Note over AsyncServer: Bind to IP:50000
     Note over AsyncServer: Listen(2)
     
-    rect rgb(220, 220, 220)
-        Note over AsyncServer: User Input Loop
-        alt Press 1
-            AsyncServer->>BeginAccept: Start Accept Loop
-        else Press 2
-            AsyncServer->>AsyncServer: Close Listener
-        end
-    end
-    
     rect rgb(200, 220, 255)
-        Note over BeginAccept: Accept Loop (while m_acceptLoop)
-        BeginAccept->>AcceptCallback: BeginAccept
-        
-        AcceptCallback->>ReceiveCallback: BeginReceive
-        Note over AcceptCallback: Create Session
-        
-        rect rgb(240, 240, 255)
-            Note over ReceiveCallback: Receive Data
-            Note over ReceiveCallback: Convert to String
-            ReceiveCallback->>SendCallback: BeginSend Response
-            Note over SendCallback: Send Complete
-        end
-        
-        Note over ReceiveCallback: Error Handling
-        alt Socket Exception
-            Note over ReceiveCallback: Handle Disconnection
-        end
+        Note over AsyncServer: User Input Loop
+        AsyncServer->>BeginAccept: Press 1 (Start Accept)
+        activate BeginAccept
     end
-    
-    Note over AsyncServer: Session Class
-    class Session {
-        Socket Connection
-        byte[] Buffer
-    }
+
+    loop While m_acceptLoop
+        BeginAccept->>BeginAccept: BeginAccept with AsyncCallback
+        Client->>BeginAccept: Connection Request
+        BeginAccept->>AcceptCallback: Trigger AcceptCallback
+        deactivate BeginAccept
+        
+        activate AcceptCallback
+        Note over AcceptCallback: Create Session
+        AcceptCallback->>ReceiveCallback: BeginReceive
+        deactivate AcceptCallback
+        
+        activate ReceiveCallback
+        Client->>ReceiveCallback: Send Data
+        Note over ReceiveCallback: Process Received Data
+        ReceiveCallback->>SendCallback: BeginSend Response
+        deactivate ReceiveCallback
+        
+        activate SendCallback
+        SendCallback-->>Client: Send Response
+        Note over SendCallback: Log Send Complete
+        deactivate SendCallback
+    end
+
+    opt Socket Exception
+        Note over ReceiveCallback: Handle Client Disconnection
+        ReceiveCallback-->>AsyncServer: Log Disconnection
+    end
+
+    AsyncServer->>AsyncServer: Press 2 (Stop)
+    Note over AsyncServer: Close Listener
 ```  
 	
