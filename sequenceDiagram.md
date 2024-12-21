@@ -73,3 +73,55 @@ sequenceDiagram
     end
 ```  
     
+## BasicAsyncSocketServer 시퀸스 다이어그램
+  
+```mermaid
+sequenceDiagram
+    participant Main
+    participant AsyncServer
+    participant BeginAccept
+    participant AcceptCallback
+    participant ReceiveCallback
+    participant SendCallback
+    
+    Main->>AsyncServer: Start
+    Note over AsyncServer: Setup Socket Listener
+    Note over AsyncServer: Bind to IP:50000
+    Note over AsyncServer: Listen(2)
+    
+    rect rgb(220, 220, 220)
+        Note over AsyncServer: User Input Loop
+        alt Press 1
+            AsyncServer->>BeginAccept: Start Accept Loop
+        else Press 2
+            AsyncServer->>AsyncServer: Close Listener
+        end
+    end
+    
+    rect rgb(200, 220, 255)
+        Note over BeginAccept: Accept Loop (while m_acceptLoop)
+        BeginAccept->>AcceptCallback: BeginAccept
+        
+        AcceptCallback->>ReceiveCallback: BeginReceive
+        Note over AcceptCallback: Create Session
+        
+        rect rgb(240, 240, 255)
+            Note over ReceiveCallback: Receive Data
+            Note over ReceiveCallback: Convert to String
+            ReceiveCallback->>SendCallback: BeginSend Response
+            Note over SendCallback: Send Complete
+        end
+        
+        Note over ReceiveCallback: Error Handling
+        alt Socket Exception
+            Note over ReceiveCallback: Handle Disconnection
+        end
+    end
+    
+    Note over AsyncServer: Session Class
+    class Session {
+        Socket Connection
+        byte[] Buffer
+    }
+```  
+	

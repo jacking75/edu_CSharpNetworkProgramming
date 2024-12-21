@@ -13,6 +13,8 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("Basic TCP Async Server");
+
+        AsyncServer();
     }
 
 
